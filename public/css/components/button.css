@@ -1,0 +1,260 @@
+/* =========================================================
+   BUTTON SYSTEM
+========================================================= */
+
+.btn {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    height: 46px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 14px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+}
+
+.btn i {
+
+    width: 18px;
+    height: 18px;
+
+}
+
+.btn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+.btn:active {
+
+    transform: scale(.98);
+
+}
+
+.btn:disabled {
+
+    opacity: .6;
+    cursor: not-allowed;
+    transform: none;
+
+}
+
+/* primary button */
+.btn-primary {
+
+    background: var(--primary);
+    color: white;
+
+}
+
+.btn-primary:hover {
+
+    background: var(--primary-dark);
+
+}
+
+.btn-success {
+
+    background: var(--success);
+    color: white;
+
+}
+
+.btn-success:hover {
+
+    filter: brightness(.95);
+
+}
+
+.btn-danger {
+
+    background: var(--danger);
+    color: white;
+
+}
+
+.btn-danger:hover {
+
+    filter: brightness(.95);
+
+}
+
+
+.btn-warning {
+
+    background: var(--warning);
+    color: white;
+
+}
+
+.btn-warning:hover {
+
+    filter: brightness(.95);
+
+}
+
+.btn-info {
+
+    background: var(--info);
+    color: white;
+
+}
+
+.btn-info:hover {
+
+    filter: brightness(.95);
+
+}
+
+.btn-secondary {
+
+    background: var(--gray-100);
+
+    color: var(--text);
+
+}
+
+.btn-secondary:hover {
+
+    background: var(--gray-200);
+
+}
+
+.btn-outline {
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    color: var(--text);
+
+}
+
+.btn-outline:hover {
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+
+}
+
+.btn-ghost {
+
+    background: transparent;
+
+    color: var(--text);
+
+}
+
+.btn-ghost:hover {
+
+    background: var(--gray-100);
+
+}
+
+.btn-soft {
+
+    background: #ECFDF5;
+
+    color: var(--primary);
+
+}
+
+.btn-soft:hover {
+
+    background: #D1FAE5;
+
+}
+
+.btn-icon {
+
+    width: 46px;
+
+    padding: 0;
+
+}
+
+/* rounded button */
+
+.btn-pill {
+
+    border-radius: 999px;
+
+}
+
+/* button size */
+.btn-sm {
+
+    height: 38px;
+
+    padding: 0 15px;
+
+    font-size: 13px;
+
+}
+
+.btn-lg {
+
+    height: 54px;
+
+    padding: 0 28px;
+
+    font-size: 16px;
+
+}
+
+.btn-block {
+
+    width: 100%;
+
+}
+
+.btn-loading {
+
+    pointer-events: none;
+
+    opacity: .8;
+
+}
+
+.btn-loading i {
+
+    animation: spin .8s linear infinite;
+
+}
+
+@keyframes spin {
+
+    100% {
+
+        transform: rotate(360deg);
+
+    }
+
+}
+
+.btn-group{
+
+display:flex;
+
+gap:12px;
+
+flex-wrap:wrap;
+
+}

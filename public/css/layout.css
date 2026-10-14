@@ -1,0 +1,145 @@
+/* ============================================================
+   LAYOUT ADMIN — GARASI PART
+   Mengikuti struktur app.css: konten di dalam kartu putih
+   membulat (.page) di sebelah sidebar.
+   Dimuat SETELAH app.css, jadi aturan di sini yang berlaku.
+
+   Posisi konten mengikuti lebar sidebar (lihat sidebar.css):
+   - Laptop : sidebar 280px + jarak 20px  → konten mulai 320px
+   - Tablet : sidebar 240px + jarak 15px  → konten mulai 270px
+   - Ringkas: sidebar 90px                → 130px / 120px
+   - HP     : sidebar jadi laci, konten selebar layar
+============================================================ */
+
+body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--bg, #f3f4f6);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg, #f3f4f6);
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    margin-left: 320px;
+    padding: 20px;
+    transition: margin-left .35s ease;
+}
+
+body.sidebar-collapse .main {
+    margin-left: 130px;
+}
+
+.page {
+    min-width: 0;
+    min-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 28px;
+    background: #fff;
+    box-shadow: var(--shadow, 0 10px 30px rgba(15, 18, 24, .06));
+    /* clip (bukan hidden) supaya navbar sticky tetap menempel saat scroll */
+    overflow: hidden;
+    overflow: clip;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 40px;
+}
+
+.content:focus {
+    outline: none;
+}
+
+/* ---------- LAPTOP KECIL ---------- */
+@media (max-width: 1200px) {
+    .content {
+        padding: 32px;
+    }
+}
+
+/* ---------- TABLET ---------- */
+@media (max-width: 992px) {
+    .main {
+        margin-left: 270px;
+        padding: 15px;
+    }
+
+    body.sidebar-collapse .main {
+        margin-left: 120px;
+    }
+
+    .page {
+        min-height: calc(100vh - 30px);
+        border-radius: 22px;
+    }
+
+    .content {
+        padding: 24px;
+    }
+}
+
+/* ---------- HP: kartu jadi selebar layar ---------- */
+@media (max-width: 768px) {
+
+    .main,
+    body.sidebar-collapse .main {
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .page {
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .content {
+        padding: 18px 14px;
+        padding-bottom: max(28px, env(safe-area-inset-bottom));
+    }
+}
+
+/* ---------- Aksesibilitas ---------- */
+.skip-link {
+    position: fixed;
+    z-index: 2000;
+    top: 10px;
+    left: 10px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: #14171c;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transform: translateY(-160%);
+    transition: transform .2s ease;
+}
+
+.skip-link:focus {
+    transform: none;
+}
+
+/* matikan animasi saat halaman pertama dimuat
+   (mencegah sidebar "terbuka lalu menutup" sekilas) */
+body.no-transition *,
+body.no-transition *::before,
+body.no-transition *::after {
+    transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .main {
+        transition: none;
+    }
+}

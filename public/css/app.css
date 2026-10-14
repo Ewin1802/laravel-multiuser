@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@import "variables.css";
+@import "reset.css";
+@import "typography.css";
+
+@import "layout.css";
+@import "sidebar.css";
+@import "navbar.css";
+@import "responsive.css";
+
+@import "components/button.css";
+@import "components/card.css";
+@import "components/form.css";
+@import "components/table.css";
+@import "components/badge.css";
+@import "components/dropdown.css";
+@import "components/alert.css";
+@import "components/modal.css";
+@import "components/toast.css";
+@import "dashboard.css";
+@import "pages.css";
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+    background: #b7c3c0;
+
+    border-radius: 30px;
+
+}

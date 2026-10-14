@@ -1,0 +1,235 @@
+/* =========================================================
+   TOAST SYSTEM
+========================================================= */
+
+.toast-container {
+
+    position: fixed;
+
+    top: 25px;
+
+    right: 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+    z-index: 9999;
+
+}
+
+.toast {
+
+    min-width: 340px;
+
+    background: #fff;
+
+    border-radius: 18px;
+
+    padding: 18px 22px;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 15px;
+
+    box-shadow:
+
+        0 20px 45px rgba(15, 23, 42, .12);
+
+    border-left: 5px solid;
+
+    animation: toastShow .3s;
+
+}
+
+@keyframes toastShow {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+
+            translateX(40px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: none;
+
+    }
+
+}
+
+.toast.hide {
+
+    animation:
+
+        toastHide .3s forwards;
+
+}
+
+@keyframes toastHide {
+
+    to {
+
+        opacity: 0;
+
+        transform:
+
+            translateX(60px);
+
+    }
+
+}
+
+.toast-icon {
+
+    width: 24px;
+
+    height: 24px;
+
+    flex-shrink: 0;
+
+}
+
+.toast-body {
+
+    flex: 1;
+
+}
+
+.toast-title {
+
+    font-weight: 700;
+
+    margin-bottom: 5px;
+
+}
+
+.toast-text {
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+}
+
+.toast-close {
+
+    cursor: pointer;
+
+    opacity: .6;
+
+    transition: .2s;
+
+}
+
+.toast-close:hover {
+
+    opacity: 1;
+
+}
+
+.toast-success {
+
+    border-color: #16A34A;
+
+}
+
+.toast-danger {
+
+    border-color: #DC2626;
+
+}
+
+.toast-warning {
+
+    border-color: #F59E0B;
+
+}
+
+.toast-info {
+
+    border-color: #2563EB;
+
+}
+
+.loading {
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+
+        rgba(255, 255, 255, .72);
+
+    backdrop-filter: blur(4px);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: .25s;
+
+    z-index: 10000;
+
+}
+
+.loading.show {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+.spinner {
+
+    width: 64px;
+
+    height: 64px;
+
+    border-radius: 50%;
+
+    border: 6px solid #D1FAE5;
+
+    border-top-color:
+
+        var(--primary);
+
+    animation:
+
+        spin 1s linear infinite;
+
+}
+
+.loading-content {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 18px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+}

@@ -1,0 +1,115 @@
+/* =========================================================
+   ALERT SYSTEM
+========================================================= */
+
+.alert {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 16px;
+
+    padding: 18px 20px;
+
+    border-radius: 18px;
+
+    margin-bottom: 20px;
+
+    border-left: 5px solid;
+
+}
+
+.alert-icon {
+
+    width: 22px;
+
+    height: 22px;
+
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+}
+
+.alert-body {
+
+    flex: 1;
+
+}
+
+.alert-title {
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+
+}
+
+.alert-text {
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+}
+
+.alert-success {
+
+    background: #ECFDF5;
+
+    border-color: #16A34A;
+
+    color: #166534;
+
+}
+
+.alert-danger {
+
+    background: #FEF2F2;
+
+    border-color: #DC2626;
+
+    color: #991B1B;
+
+}
+
+.alert-warning {
+
+    background: #FFFBEB;
+
+    border-color: #F59E0B;
+
+    color: #92400E;
+
+}
+
+.alert-info {
+
+    background: #EFF6FF;
+
+    border-color: #2563EB;
+
+    color: #1E40AF;
+
+}
+
+.alert-close {
+
+    margin-left: auto;
+
+    cursor: pointer;
+
+    opacity: .7;
+
+    transition: .2s;
+
+}
+
+.alert-close:hover {
+
+    opacity: 1;
+
+}

@@ -1,0 +1,2368 @@
+/* ============================================================
+   GARASI PART — TRANSAKSI / ORDER
+   Tema sama dengan dashboard: graphite + aksen oranye.
+
+   RESPONSIVE: grid & tabel memakai CONTAINER QUERY (@container
+   order), jadi menyesuaikan lebar area konten yang sebenarnya
+   (ikut berubah saat sidebar diringkas/dibuka).
+   - ≥ 761px konten : tabel biasa
+   - ≤ 760px konten : tiap transaksi jadi kartu (tanpa geser samping)
+
+   Catatan: class untuk halaman tambah/edit transaksi
+   (.order-items-*, .items-footer, dst.) tetap dipertahankan
+   di bagian bawah file.
+============================================================ */
+
+:root {
+    --o-ink: #14171c;
+    --o-ink-2: #2a2f37;
+    --o-muted: #667080;
+    --o-subtle: #9aa2ae;
+    --o-border: #e5e7eb;
+    --o-line: #eef0f3;
+    --o-soft: #f7f8fa;
+    --o-card: #ffffff;
+
+    --o-accent: #ff6a1a;
+    --o-accent-2: #ffae1f;
+    --o-accent-dark: #e2550a;
+    --o-accent-soft: #fff1e8;
+
+    --o-green: #16a34a;
+    --o-green-soft: #ecfdf3;
+    --o-red: #dc2626;
+    --o-red-soft: #fef2f2;
+    --o-yellow: #b7791f;
+    --o-yellow-soft: #fef7e6;
+    --o-slate: #475569;
+    --o-slate-soft: #eef2f6;
+
+    --o-radius: 18px;
+    --o-shadow: 0 1px 2px rgba(15, 18, 24, .04), 0 8px 24px rgba(15, 18, 24, .04);
+    --o-head: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+
+.order-page {
+    container: order / inline-size;
+    width: 100%;
+    max-width: 1500px;
+    min-width: 0;
+    margin: 0 auto;
+    color: var(--o-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.order-page *,
+.order-modal * {
+    box-sizing: border-box;
+}
+
+.order-page h1,
+.order-page h3,
+.order-page h4,
+.order-page p,
+.order-modal h2,
+.order-modal h3,
+.order-modal p {
+    margin: 0;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+.order-header,
+.expense-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.order-eyebrow,
+.expense-eyebrow,
+.section-eyebrow {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--o-accent-dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+}
+
+.order-header h1 {
+    font-family: var(--o-head);
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.order-header p,
+.expense-header p {
+    margin-top: 8px;
+    color: var(--o-muted);
+    font-size: 14px;
+}
+
+/* ============================================================
+   TOMBOL
+============================================================ */
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--o-accent), #ff8a2a);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 106, 26, .25);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(255, 106, 26, .32);
+}
+
+.btn-primary svg {
+    width: 17px;
+    height: 17px;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--o-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--o-ink-2);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.btn-icon:hover {
+    border-color: var(--o-ink);
+    background: var(--o-ink);
+    color: #fff;
+}
+
+.btn-delete-order:hover {
+    border-color: var(--o-red);
+    background: var(--o-red);
+}
+
+.btn-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================================
+   FILTER
+============================================================ */
+
+.filter-card {
+    margin-bottom: 18px;
+    padding: 16px;
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius);
+    background: var(--o-card);
+    box-shadow: var(--o-shadow);
+}
+
+/* header filter lama (kalau dipakai halaman lain) */
+.filter-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.filter-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: end;
+    gap: 12px;
+}
+
+.filter-grid .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    min-width: 0;
+}
+
+.filter-grid label {
+    color: var(--o-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.filter-grid select,
+.filter-grid input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--o-border);
+    border-radius: 11px;
+    background: var(--o-soft);
+    color: var(--o-ink);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.filter-grid select:focus,
+.filter-grid input:focus {
+    border-color: var(--o-accent);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 106, 26, .12);
+}
+
+.filter-submit,
+.filter-action .btn-primary {
+    width: 100%;
+}
+
+@container order (min-width: 440px) {
+    .filter-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-grid .form-group:first-child,
+    .filter-submit,
+    .filter-action {
+        grid-column: 1 / -1;
+    }
+}
+
+@container order (min-width: 760px) {
+    .filter-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    }
+
+    .filter-grid .form-group:first-child,
+    .filter-submit,
+    .filter-action {
+        grid-column: auto;
+    }
+
+    .filter-submit {
+        width: auto;
+    }
+}
+
+/* ============================================================
+   RINGKASAN
+============================================================ */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+@container order (min-width: 340px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container order (min-width: 900px) {
+    .summary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+    }
+}
+
+.summary-card {
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius);
+    background: var(--o-card);
+    box-shadow: var(--o-shadow);
+}
+
+.summary-card.is-highlight {
+    border-color: transparent;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255, 106, 26, .3), transparent 50%),
+        linear-gradient(160deg, #171b21, #0c0e11);
+    color: #fff;
+}
+
+.summary-card.is-highlight small {
+    color: #8d97a5;
+}
+
+.summary-card.is-highlight h3 {
+    color: var(--o-accent-2);
+}
+
+.summary-card.is-highlight .summary-icon {
+    background: rgba(255, 106, 26, .16);
+}
+
+.summary-icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+}
+
+.summary-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.summary-icon.orange,
+.summary-icon.brown  { background: var(--o-accent-soft); color: var(--o-accent); }
+.summary-icon.green  { background: var(--o-green-soft);  color: var(--o-green); }
+.summary-icon.slate,
+.summary-icon.blue   { background: var(--o-slate-soft);  color: var(--o-slate); }
+.summary-icon.yellow,
+.summary-icon.purple { background: var(--o-yellow-soft); color: var(--o-yellow); }
+.summary-icon.red    { background: var(--o-red-soft);    color: var(--o-red); }
+
+.summary-content {
+    min-width: 0;
+}
+
+.summary-content small {
+    display: block;
+    color: var(--o-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.summary-content h3 {
+    margin-top: 4px;
+    font-family: var(--o-head);
+    /* cqi = % lebar konten → angka mengecil sendiri di layar sempit */
+    font-size: clamp(19px, 2.2cqi, 26px);
+    font-weight: 800;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+/* HP: kartu ringkas 2 kolom, ikon di atas */
+@container order (max-width: 559px) {
+    .summary-card {
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .summary-icon {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+        border-radius: 10px;
+    }
+}
+
+/* ============================================================
+   GRAFIK
+============================================================ */
+
+.report-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+@container order (min-width: 820px) {
+    .report-grid {
+        grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
+    }
+}
+
+.report-card {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius);
+    background: var(--o-card);
+    box-shadow: var(--o-shadow);
+}
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.card-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.card-header small {
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+.card-header-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--o-accent-soft);
+    color: var(--o-accent);
+}
+
+.card-header-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* tinggi tetap → tidak ada pergeseran layout saat grafik dimuat */
+.chart-container {
+    position: relative;
+    height: 290px;
+}
+
+.payment-chart-container {
+    position: relative;
+    height: 210px;
+}
+
+.donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.donut-center strong {
+    font-family: var(--o-head);
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.donut-center span {
+    color: var(--o-muted);
+    font-size: 12px;
+}
+
+.chart-empty {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px dashed var(--o-border);
+    border-radius: 14px;
+    color: var(--o-subtle);
+    font-size: 14px;
+    text-align: center;
+}
+
+.chart-empty svg {
+    width: 26px;
+    height: 26px;
+    color: #c4c9d0;
+}
+
+.chart-error {
+    color: var(--o-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.payment-legend {
+    margin-top: 12px;
+}
+
+.payment-legend > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    border-top: 1px solid var(--o-line);
+    color: var(--o-ink-2);
+    font-size: 14px;
+}
+
+.payment-legend strong {
+    margin-left: auto;
+    font-weight: 700;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    border-radius: 50%;
+}
+
+.dot.cash { background: var(--o-accent); }
+.dot.transfer { background: var(--o-ink-2); }
+
+@container order (max-width: 559px) {
+    .report-card {
+        padding: 16px;
+    }
+
+    .chart-container {
+        height: 240px;
+    }
+}
+
+/* ============================================================
+   TABEL TRANSAKSI
+============================================================ */
+
+.table-card {
+    overflow: hidden;
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius);
+    background: var(--o-card);
+    box-shadow: var(--o-shadow);
+}
+
+.table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 20px;
+}
+
+.table-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.transaction-count {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--o-soft);
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+.transaction-count strong {
+    color: var(--o-ink);
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    min-width: 880px;
+    border-collapse: collapse;
+}
+
+.table th {
+    padding: 11px 14px;
+    border-top: 1px solid var(--o-border);
+    border-bottom: 1px solid var(--o-border);
+    background: var(--o-soft);
+    color: var(--o-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--o-line);
+    color: var(--o-ink-2);
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: #fffaf6;
+}
+
+.row-number {
+    color: var(--o-subtle);
+    font-size: 13px;
+}
+
+.invoice-number {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 7px;
+    background: var(--o-soft);
+    color: var(--o-ink);
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.date-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.date-cell strong {
+    color: var(--o-ink);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.date-cell small {
+    color: var(--o-subtle);
+    font-size: 12px;
+}
+
+.customer-name {
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge svg {
+    width: 13px;
+    height: 13px;
+}
+
+.badge-cash {
+    background: var(--o-accent-soft);
+    color: var(--o-accent-dark);
+}
+
+.badge-transfer {
+    background: var(--o-slate-soft);
+    color: var(--o-slate);
+}
+
+.item-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 28px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: var(--o-soft);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.table-total {
+    color: var(--o-ink);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.row-actions form {
+    display: contents;
+}
+
+/* kosong */
+.order-empty,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 48px 16px;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 6px;
+    border-radius: 14px;
+    background: var(--o-accent-soft);
+    color: var(--o-accent);
+}
+
+.empty-icon svg {
+    width: 23px;
+    height: 23px;
+}
+
+.order-empty h4,
+.empty-state h4 {
+    font-size: 15px;
+}
+
+.order-empty p,
+.empty-state p {
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+/* ---------- HP / konten sempit: tabel → kartu ---------- */
+@container order (max-width: 760px) {
+    .table {
+        min-width: 0;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+    }
+
+    .table tbody {
+        display: grid;
+        gap: 10px;
+        padding: 0 12px 12px;
+    }
+
+    .table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 2px 12px;
+        padding: 14px;
+        border: 1px solid var(--o-border);
+        border-radius: 14px;
+    }
+
+    .table tbody tr:hover {
+        background: transparent;
+    }
+
+    .table tbody td {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 0;
+        border: 0;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .table tbody td::before {
+        content: attr(data-label);
+        color: var(--o-muted);
+        font-size: 13px;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    /* baris atas kartu: invoice kiri, total kanan */
+    .table tbody .row-number {
+        display: none;
+    }
+
+    .table tbody .cell-invoice {
+        grid-column: 1;
+        order: -2;
+        padding: 0 0 8px;
+    }
+
+    .table tbody .cell-total {
+        grid-column: 2;
+        order: -1;
+        padding: 0 0 8px;
+    }
+
+    .table tbody .cell-invoice::before,
+    .table tbody .cell-total::before,
+    .table tbody .cell-actions::before {
+        display: none;
+    }
+
+    .table tbody .cell-total .table-total {
+        font-family: var(--o-head);
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .table tbody .cell-date .date-cell {
+        flex-direction: row;
+        gap: 6px;
+    }
+
+    .table tbody .cell-actions {
+        margin-top: 6px;
+        padding-top: 12px;
+        border-top: 1px solid var(--o-line);
+    }
+
+    .table tbody .cell-actions .row-actions {
+        width: 100%;
+    }
+
+    .table tbody .cell-actions .btn-icon {
+        flex: 1;
+        width: auto;
+        height: 40px;
+    }
+
+    .table tbody .empty-row {
+        display: block;
+        border: 0;
+        padding: 0;
+    }
+
+    .table tbody .empty-row td {
+        display: block;
+    }
+
+    .table tbody .empty-row td::before {
+        display: none;
+    }
+
+    .table-header {
+        padding: 16px;
+    }
+}
+
+/* ============================================================
+   PAGINATION (markup: vendor/pagination/custom.blade.php)
+============================================================ */
+
+.table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--o-line);
+}
+
+.pagination-info {
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+.pagination-info strong {
+    color: var(--o-ink);
+}
+
+.pagination-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.pagination-wrapper .trx-pagination {
+    display: flex;
+}
+
+.trx-pagination-list {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.trx-page {
+    display: flex;
+}
+
+.trx-page-link {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--o-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--o-ink-2);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.trx-page-link svg,
+.trx-page-link i {
+    width: 15px;
+    height: 15px;
+}
+
+.trx-page:not(.disabled):not(.active) .trx-page-link:hover {
+    border-color: var(--o-accent);
+    color: var(--o-accent-dark);
+}
+
+.trx-page.active .trx-page-link {
+    border-color: var(--o-ink);
+    background: var(--o-ink);
+    color: #fff;
+}
+
+.trx-page.disabled .trx-page-link {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.trx-page-dots {
+    border-color: transparent;
+    background: transparent;
+}
+
+@container order (max-width: 760px) {
+    .table-footer {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px 16px;
+    }
+
+    .pagination-wrapper .trx-pagination {
+        justify-content: center;
+    }
+}
+
+/* ============================================================
+   MODAL DETAIL
+============================================================ */
+
+.order-modal {
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    display: none;
+    color: var(--o-ink);
+}
+
+.order-modal.show {
+    display: block;
+}
+
+.order-modal-backdrop,
+.order-modal .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 6, 8, .6);
+}
+
+.order-modal-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(640px, calc(100% - 32px));
+    max-height: calc(100vh - 40px);
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, .3);
+    transform: translate(-50%, -50%);
+    animation: orderModalIn .22s ease;
+}
+
+@keyframes orderModalIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -46%);
+    }
+}
+
+.order-modal-header {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--o-border);
+    background: #fff;
+}
+
+.order-modal-header > div {
+    min-width: 0;
+}
+
+.order-modal-header h2 {
+    font-family: var(--o-head);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.order-modal-header p {
+    margin-top: 6px;
+    color: var(--o-muted);
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    font-size: 13px;
+}
+
+.order-modal-close,
+.order-modal .modal-close {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--o-border);
+    border-radius: 11px;
+    background: #fff;
+    color: var(--o-ink);
+    cursor: pointer;
+}
+
+.order-modal-close:hover,
+.order-modal .modal-close:hover {
+    border-color: var(--o-ink);
+    background: var(--o-ink);
+    color: #fff;
+}
+
+.order-modal-close svg {
+    width: 18px;
+    height: 18px;
+}
+
+.modal-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 22px;
+    color: var(--o-muted);
+    font-size: 14px;
+    text-align: center;
+}
+
+.modal-state[hidden],
+.order-modal-content[hidden],
+.order-info-item[hidden],
+.total-row[hidden] {
+    display: none !important;
+}
+
+.modal-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--o-line);
+    border-top-color: var(--o-accent);
+    border-radius: 50%;
+    animation: orderSpin .8s linear infinite;
+}
+
+@keyframes orderSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.modal-error-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--o-red-soft);
+    color: var(--o-red);
+}
+
+.modal-error-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.modal-error h3 {
+    color: var(--o-ink);
+    font-size: 16px;
+}
+
+.order-modal-content {
+    padding: 18px 22px 22px;
+}
+
+.order-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.order-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--o-soft);
+}
+
+.order-info-item span,
+.modal-payment-box span {
+    color: var(--o-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.order-info-item strong,
+.modal-payment-box strong {
+    overflow-wrap: anywhere;
+    font-size: 14px;
+}
+
+.modal-payment-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border: 1px solid var(--o-border);
+    border-radius: 12px;
+}
+
+.modal-payment-box strong {
+    display: block;
+    margin-top: 2px;
+    text-transform: capitalize;
+}
+
+.modal-status {
+    text-align: right;
+}
+
+.modal-status strong {
+    color: var(--o-green);
+}
+
+.modal-section {
+    margin-bottom: 16px;
+}
+
+.modal-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.modal-section-header h3 {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.modal-section-header span {
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+.modal-items {
+    overflow-x: auto;
+    border: 1px solid var(--o-border);
+    border-radius: 12px;
+}
+
+.modal-items table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal-items th {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--o-border);
+    background: var(--o-soft);
+    color: var(--o-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.modal-items td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--o-line);
+    font-size: 14px;
+}
+
+.modal-items td:first-child strong {
+    font-weight: 600;
+}
+
+.modal-items tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.modal-empty-items {
+    padding: 24px !important;
+    color: var(--o-muted);
+    text-align: center;
+}
+
+.modal-total-box {
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--o-soft);
+}
+
+.total-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 5px 0;
+    color: var(--o-muted);
+    font-size: 14px;
+}
+
+.total-row strong {
+    color: var(--o-ink);
+    font-weight: 600;
+}
+
+.total-divider {
+    height: 1px;
+    margin: 8px 0;
+    background: var(--o-border);
+}
+
+.total-final span {
+    color: var(--o-ink);
+    font-weight: 700;
+}
+
+.total-final strong {
+    color: var(--o-accent-dark);
+    font-family: var(--o-head);
+    font-size: 26px;
+    font-weight: 800;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* HP: modal muncul dari bawah (bottom sheet) */
+@media (max-width: 600px) {
+    .order-modal-dialog {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-height: 92vh;
+        max-height: 92dvh;
+        border-radius: 22px 22px 0 0;
+        transform: none;
+        animation-name: orderSheetIn;
+    }
+
+    @keyframes orderSheetIn {
+        from {
+            transform: translateY(40px);
+            opacity: 0;
+        }
+    }
+
+    .order-modal-header,
+    .order-modal-content {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .order-modal-content {
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    .order-info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ============================================================
+   HALAMAN TAMBAH / EDIT TRANSAKSI
+   (dipertahankan dari versi lama, warna disesuaikan)
+============================================================ */
+
+.order-items-card {
+    overflow: hidden;
+}
+
+.order-items-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--o-border);
+}
+
+.order-items-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.order-items-icon,
+.item-product-icon,
+.items-count-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    background: var(--o-accent-soft);
+    color: var(--o-accent);
+}
+
+.order-items-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+}
+
+.item-product-icon,
+.items-count-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+}
+
+.order-items-icon svg { width: 19px; height: 19px; }
+.item-product-icon svg,
+.items-count-icon svg { width: 16px; height: 16px; }
+
+.order-items-title .section-label {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--o-accent-dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+}
+
+.order-items-title h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.order-items-title p {
+    margin: 3px 0 0;
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+.add-item-btn {
+    flex-shrink: 0;
+}
+
+.order-items-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.order-items-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.order-items-table .product-column  { width: 40%; }
+.order-items-table .qty-column      { width: 12%; }
+.order-items-table .price-column    { width: 20%; }
+.order-items-table .subtotal-column { width: 22%; }
+.order-items-table .action-column   { width: 6%; }
+
+.order-items-table thead th {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--o-border);
+    background: var(--o-soft);
+    color: var(--o-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.order-items-table tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--o-line);
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.order-items-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.item-product-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.order-items-table .item-product,
+.order-items-table .item-qty,
+.order-items-table .item-price {
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--o-border);
+    border-radius: 10px;
+    background: var(--o-soft);
+    color: var(--o-ink);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.order-items-table .item-product {
+    min-width: 0;
+    padding: 0 30px 0 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.order-items-table .item-qty {
+    padding: 0 8px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.order-items-table .item-price {
+    padding: 0 12px 0 34px;
+    font-weight: 700;
+}
+
+.order-items-table .item-product:focus,
+.order-items-table .item-qty:focus,
+.order-items-table .item-price:focus {
+    border-color: var(--o-accent);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 106, 26, .12);
+}
+
+.number-input-wrapper,
+.price-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currency-prefix {
+    position: absolute;
+    left: 12px;
+    color: var(--o-muted);
+    font-size: 12px;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.subtotal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.subtotal-label {
+    color: var(--o-subtle);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.order-items-table .item-subtotal {
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.order-items-table .action-cell {
+    text-align: right;
+}
+
+.order-items-table .remove-item-btn {
+    width: 36px;
+    height: 36px;
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: var(--o-red-soft);
+    color: var(--o-red);
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.order-items-table .remove-item-btn:hover {
+    background: var(--o-red);
+    color: #fff;
+}
+
+.order-items-table .remove-item-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.items-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--o-border);
+    background: var(--o-soft);
+}
+
+.items-count {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.items-count > div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.items-count span {
+    color: var(--o-muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.items-count strong {
+    font-size: 14px;
+}
+
+.items-footer-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--o-muted);
+    font-size: 12px;
+}
+
+.items-footer-note svg {
+    width: 14px;
+    height: 14px;
+    color: var(--o-accent);
+}
+
+@media (max-width: 700px) {
+    .order-items-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+    }
+
+    .order-items-header .add-item-btn {
+        width: 100%;
+    }
+
+    .items-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 16px;
+    }
+}
+
+/* ============================================================
+   UMUM
+============================================================ */
+
+@media (max-width: 768px) {
+    .order-header h1 {
+        font-size: 34px;
+    }
+
+    .btn-primary:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .order-page *,
+    .order-modal * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ============================================================
+   HALAMAN EDIT TRANSAKSI (edit.blade.php)
+   - Laptop  : form kiri + ringkasan biaya menempel di kanan
+   - Tablet/HP: satu kolom + bar total & tombol Simpan di bawah layar
+============================================================ */
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    color: var(--o-muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: var(--o-accent-dark);
+}
+
+.back-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+.order-edit .order-header p {
+    margin-top: 10px;
+}
+
+/* ---------- pemberitahuan ---------- */
+.notice {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border: 1px solid;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.notice strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 14px;
+}
+
+.notice p,
+.notice ul {
+    margin: 0;
+}
+
+.notice ul {
+    padding-left: 18px;
+}
+
+.notice-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+}
+
+.notice-icon svg {
+    width: 17px;
+    height: 17px;
+}
+
+.notice-warning {
+    border-color: #fde4c8;
+    background: #fffaf3;
+    color: #7a4b12;
+}
+
+.notice-warning .notice-icon {
+    background: var(--o-yellow-soft);
+    color: var(--o-yellow);
+}
+
+.notice-danger {
+    border-color: #fecaca;
+    background: var(--o-red-soft);
+    color: #991b1b;
+}
+
+.notice-danger .notice-icon {
+    background: #fee2e2;
+    color: var(--o-red);
+}
+
+/* ---------- tata letak ---------- */
+.edit-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.edit-main {
+    container: editmain / inline-size;
+    min-width: 0;
+    display: grid;
+    gap: 16px;
+}
+
+.edit-side {
+    min-width: 0;
+}
+
+@container order (min-width: 880px) {
+    .edit-layout {
+        grid-template-columns: minmax(0, 1fr) 320px;
+    }
+
+    /* ringkasan ikut turun saat scroll */
+    .edit-side {
+        position: sticky;
+        top: 96px;
+    }
+
+    .mobile-savebar {
+        display: none !important;
+    }
+}
+
+/* ---------- kartu ---------- */
+.edit-card {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius);
+    background: var(--o-card);
+    box-shadow: var(--o-shadow);
+}
+
+.edit-card.order-items-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.edit-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.order-items-card .edit-card-head {
+    margin: 0;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--o-line);
+}
+
+.edit-card-head > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.edit-card-head h3 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.edit-card-head p {
+    margin-top: 1px;
+    color: var(--o-muted);
+    font-size: 13px;
+}
+
+.edit-card-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--o-accent-soft);
+    color: var(--o-accent);
+}
+
+.edit-card-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.edit-card-head .add-item-btn {
+    flex: 0 0 auto;
+    width: auto;
+    height: 40px;
+    padding: 0 14px;
+}
+
+/* ---------- input umum ---------- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+@container editmain (min-width: 520px) {
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .field-full {
+        grid-column: 1 / -1;
+    }
+}
+
+.field {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field label,
+.field-label,
+.item-field label,
+.calc-input label {
+    color: var(--o-ink-2);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.field small {
+    color: var(--o-subtle);
+    font-weight: 500;
+}
+
+.order-edit input[type="text"],
+.order-edit input[type="number"],
+.order-edit input[type="datetime-local"],
+.order-edit select {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--o-border);
+    border-radius: 11px;
+    background: var(--o-soft);
+    color: var(--o-ink);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.order-edit input:focus,
+.order-edit select:focus {
+    border-color: var(--o-accent);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 106, 26, .12);
+}
+
+.order-edit input:invalid:not(:placeholder-shown):not(:focus) {
+    border-color: #fca5a5;
+}
+
+/* input uang dengan awalan "Rp" */
+.money-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.money-input > span {
+    position: absolute;
+    left: 12px;
+    color: var(--o-muted);
+    font-size: 13px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.order-edit .money-input input {
+    padding-left: 36px;
+    font-weight: 700;
+}
+
+/* pilihan Cash / Transfer */
+.segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.segmented label {
+    position: relative;
+    cursor: pointer;
+}
+
+.segmented input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.segmented label > span {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--o-border);
+    border-radius: 11px;
+    background: var(--o-soft);
+    color: var(--o-ink-2);
+    font-size: 14px;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+.segmented label > span svg {
+    width: 17px;
+    height: 17px;
+}
+
+.segmented input:checked + span {
+    border-color: var(--o-accent);
+    background: var(--o-accent-soft);
+    color: var(--o-accent-dark);
+    box-shadow: inset 0 0 0 1px var(--o-accent);
+}
+
+.segmented input:focus-visible + span {
+    outline: 2px solid var(--o-accent);
+    outline-offset: 2px;
+}
+
+/* ---------- baris item ---------- */
+.item-list {
+    display: grid;
+}
+
+.item-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) 38px;
+    grid-template-areas:
+        "no product product remove"
+        ".  qty     price   price"
+        ".  sub     sub     sub";
+    align-items: end;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--o-line);
+}
+
+.item-no {
+    grid-area: no;
+    align-self: center;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--o-soft);
+    color: var(--o-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.item-field {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.item-field label {
+    color: var(--o-muted);
+    font-size: 12px;
+}
+
+.item-field-product  { grid-area: product; }
+.item-field-qty      { grid-area: qty; }
+.item-field-price    { grid-area: price; }
+
+.item-field-subtotal {
+    grid-area: sub;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 2px;
+}
+
+.item-unit {
+    margin-left: 4px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--o-soft);
+    color: var(--o-muted);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.order-edit .item-qty {
+    text-align: center;
+    font-weight: 700;
+}
+
+.order-edit .item-product {
+    font-weight: 600;
+}
+
+.item-subtotal {
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.remove-item-btn {
+    grid-area: remove;
+    align-self: center;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: var(--o-red-soft);
+    color: var(--o-red);
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.remove-item-btn:hover {
+    background: var(--o-red);
+    color: #fff;
+}
+
+.remove-item-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* area form lebar: satu baris per item */
+@container editmain (min-width: 680px) {
+    .item-row {
+        grid-template-columns: 24px minmax(0, 1fr) 96px 150px 120px 38px;
+        grid-template-areas: "no product qty price sub remove";
+    }
+
+    .item-field-subtotal {
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 0 0 11px;
+    }
+
+    .item-no,
+    .remove-item-btn {
+        align-self: end;
+        margin-bottom: 3px;
+    }
+
+    .item-no {
+        margin-bottom: 10px;
+    }
+}
+
+/* ---------- panel ringkasan ---------- */
+.summary-panel {
+    display: grid;
+    gap: 2px;
+}
+
+.summary-panel .edit-card-head {
+    margin-bottom: 10px;
+}
+
+.calc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 40px;
+    color: var(--o-ink-2);
+    font-size: 14px;
+}
+
+.calc-row strong {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.calc-row strong.is-off {
+    color: var(--o-subtle);
+    font-weight: 500;
+}
+
+.calc-input .money-input {
+    width: 150px;
+}
+
+.order-edit .calc-input input {
+    height: 40px;
+    text-align: right;
+}
+
+/* sakelar pajak / jasa */
+.switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.switch input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.switch-track {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex: 0 0 36px;
+    border-radius: 999px;
+    background: #d1d5db;
+    transition: background .2s ease;
+}
+
+.switch-track::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+    transition: transform .2s ease;
+}
+
+.switch input:checked + .switch-track {
+    background: var(--o-accent);
+}
+
+.switch input:checked + .switch-track::after {
+    transform: translateX(16px);
+}
+
+.switch input:focus-visible + .switch-track {
+    outline: 2px solid var(--o-accent);
+    outline-offset: 2px;
+}
+
+.switch small {
+    color: var(--o-subtle);
+    font-size: 12px;
+}
+
+.calc-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 8px 0;
+    padding: 14px 0;
+    border-top: 1px dashed var(--o-border);
+    border-bottom: 1px dashed var(--o-border);
+}
+
+.calc-total span {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.calc-total strong {
+    color: var(--o-accent-dark);
+    font-family: var(--o-head);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.calc-change strong {
+    color: var(--o-green);
+}
+
+.calc-change.is-minus strong,
+.calc-change.is-minus span {
+    color: var(--o-red);
+}
+
+.edit-actions {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.btn-ghost {
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border: 1px solid var(--o-border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--o-ink-2);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.btn-ghost:hover {
+    border-color: var(--o-ink);
+    color: var(--o-ink);
+}
+
+.btn-primary.is-loading {
+    pointer-events: none;
+    opacity: .7;
+}
+
+/* ---------- bar simpan di HP / tablet ---------- */
+.mobile-savebar {
+    position: sticky;
+    z-index: 50;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 16px -14px -18px;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--o-border);
+    background: rgba(255, 255, 255, .97);
+    box-shadow: 0 -8px 24px rgba(15, 18, 24, .06);
+}
+
+.mobile-savebar small {
+    display: block;
+    color: var(--o-muted);
+    font-size: 12px;
+}
+
+.mobile-savebar strong {
+    font-family: var(--o-head);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.mobile-savebar .btn-primary {
+    min-width: 140px;
+}
+
+/* di layar sempit tombol Simpan di panel diganti bar bawah */
+@container order (max-width: 879px) {
+    .edit-actions .btn-primary {
+        display: none;
+    }
+
+    .edit-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-savebar {
+        margin: 16px 0 0;
+        border: 1px solid var(--o-border);
+        border-radius: 14px;
+    }
+}
+
+/* ============================================================
+   PENGAMAN TOMBOL
+   Aturan global lama di app.css (mis. button:focus / button:active
+   / .btn-primary:hover) bisa menimpa warna tombol saat diklik.
+   Selector di bawah lebih kuat, jadi warna tombol tetap di semua
+   keadaan: diam, hover, fokus, ditekan, dan nonaktif.
+============================================================ */
+:is(.order-page, .order-modal) .btn-primary,
+:is(.order-page, .order-modal) .btn-primary:is(:hover, :focus, :focus-visible, :active, :disabled) {
+    background: linear-gradient(135deg, var(--o-accent, #ff6a1a), #ff8a2a);
+    color: #fff;
+}
+
+:is(.order-page, .order-modal) .btn-primary:focus-visible {
+    outline: 2px solid var(--o-ink, #14171c);
+    outline-offset: 2px;
+}
+
+:is(.order-page, .order-modal) .btn-primary:disabled {
+    opacity: .7;
+    cursor: wait;
+}

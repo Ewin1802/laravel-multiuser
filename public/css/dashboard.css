@@ -1,0 +1,1828 @@
+/* ============================================================
+   DASHBOARD — GARASI PART
+   Tema: graphite + aksen oranye (sama dengan landing, auth, sidebar)
+
+   RESPONSIVE
+   - Grid konten memakai CONTAINER QUERY (@container dash), jadi
+     menyesuaikan lebar area konten yang sebenarnya — otomatis pas
+     saat sidebar diringkas/dibuka, di HP, tablet, maupun laptop.
+   - Navbar atas memakai media query biasa.
+
+   PERFORMA
+   - Tanpa backdrop-filter (berat di HP), bayangan dibuat ringan.
+   - Bagian bawah halaman memakai content-visibility:auto
+     (browser menunda render sampai mendekati layar).
+   - Animasi hover hanya transform/opacity (tidak memicu reflow).
+============================================================ */
+
+:root {
+    --dash-bg: #f3f4f6;
+    --dash-card: #ffffff;
+    --dash-ink: #14171c;
+    --dash-ink-2: #2a2f37;
+    --dash-muted: #667080;
+    --dash-subtle: #9aa2ae;
+    --dash-border: #e5e7eb;
+    --dash-soft: #f7f8fa;
+
+    --dash-accent: #ff6a1a;
+    --dash-accent-2: #ffae1f;
+    --dash-accent-dark: #e2550a;
+    --dash-accent-soft: #fff1e8;
+
+    --dash-green: #16a34a;
+    --dash-green-soft: #ecfdf3;
+    --dash-red: #dc2626;
+    --dash-red-soft: #fef2f2;
+    --dash-yellow: #b7791f;
+    --dash-yellow-soft: #fef7e6;
+    --dash-slate: #475569;
+    --dash-slate-soft: #eef2f6;
+
+    --dash-radius: 20px;
+    --dash-shadow: 0 1px 2px rgba(15, 18, 24, .04), 0 8px 24px rgba(15, 18, 24, .04);
+    --dash-shadow-hover: 0 14px 34px rgba(15, 18, 24, .08);
+    --dash-font-head: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+
+/* ============================================================
+   TOP NAVBAR (layout)
+   !important dipertahankan karena landing.css juga memakai
+   class .navbar & .search-box. Kalau layout admin TIDAK memuat
+   landing.css, aturan ini tetap aman.
+============================================================ */
+
+.navbar,
+.navbar * {
+    box-sizing: border-box !important;
+}
+
+.navbar {
+    position: sticky !important;
+    top: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    z-index: 900 !important;
+    width: 100% !important;
+    height: 76px !important;
+    min-height: 76px !important;
+    margin: 0 !important;
+    padding: 0 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    overflow: visible !important;
+    border-bottom: 1px solid var(--dash-border) !important;
+    background: #fff !important;
+    color: var(--dash-ink) !important;
+    box-shadow: none !important;
+}
+
+.navbar.scrolled {
+    box-shadow: 0 6px 20px rgba(15, 18, 24, .06) !important;
+}
+
+.navbar-inner {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+}
+
+.navbar-left,
+.navbar-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    min-width: 0 !important;
+}
+
+.navbar-left {
+    gap: 16px !important;
+}
+
+.navbar-right {
+    gap: 10px !important;
+    margin-left: auto !important; /* tetap di kanan walau kotak pencarian dihapus */
+}
+
+.menu-button,
+.icon-button {
+    position: relative !important;
+    width: 44px !important;
+    height: 44px !important;
+    flex: 0 0 44px !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    border: 1px solid var(--dash-border) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    color: var(--dash-ink) !important;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.menu-button:hover,
+.icon-button:hover {
+    border-color: var(--dash-ink) !important;
+    background: var(--dash-ink) !important;
+    color: #fff !important;
+}
+
+.menu-button svg,
+.icon-button svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.navbar-title {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+}
+
+.navbar-title h1 {
+    margin: 0 !important;
+    overflow: hidden;
+    color: var(--dash-ink) !important;
+    font-family: var(--dash-font-head) !important;
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    line-height: 1.1 !important;
+    letter-spacing: .3px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.navbar-title span {
+    color: var(--dash-muted) !important;
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+}
+
+.navbar .brand,
+.navbar .navbar-brand,
+.navbar .brand-text,
+.navbar .brand-logo {
+    all: revert;
+}
+
+.navbar-center {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.navbar .search-box {
+    width: 100% !important;
+    max-width: 460px !important;
+    height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 0 16px !important;
+    border: 1px solid var(--dash-border) !important;
+    border-radius: 12px !important;
+    background: var(--dash-soft) !important;
+    box-shadow: none !important;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.navbar .search-box:focus-within {
+    border-color: var(--dash-accent) !important;
+    box-shadow: 0 0 0 4px rgba(255, 106, 26, .12) !important;
+}
+
+.navbar .search-box svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0 !important;
+    color: var(--dash-subtle) !important;
+}
+
+.navbar .search-box input {
+    width: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: var(--dash-ink) !important;
+    font-size: 14px !important;
+}
+
+.profile {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 6px 10px 6px 6px !important;
+    border-radius: 14px !important;
+    background: transparent !important;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.profile:hover {
+    background: var(--dash-soft) !important;
+}
+
+.avatar {
+    width: 42px !important;
+    height: 42px !important;
+    flex: 0 0 42px !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, var(--dash-accent), var(--dash-accent-2)) !important;
+    color: #fff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
+.profile-info {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+}
+
+.profile-info strong {
+    color: var(--dash-ink) !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+}
+
+.profile-info small {
+    margin-top: 2px !important;
+    color: var(--dash-muted) !important;
+    font-size: 12px !important;
+}
+
+.profile svg {
+    width: 16px !important;
+    height: 16px !important;
+    color: var(--dash-muted) !important;
+}
+
+@media (max-width: 1200px) {
+    .navbar .search-box {
+        max-width: 340px !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar {
+        padding: 0 20px !important;
+    }
+
+    .navbar-center {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        height: 66px !important;
+        min-height: 66px !important;
+        padding: 0 14px !important;
+    }
+
+    .navbar-left {
+        gap: 10px !important;
+    }
+
+    .navbar-title h1 {
+        font-size: 22px !important;
+    }
+
+    .navbar-title span,
+    .profile-info,
+    .profile > svg {
+        display: none !important;
+    }
+
+    .menu-button,
+    .icon-button {
+        width: 40px !important;
+        height: 40px !important;
+        flex-basis: 40px !important;
+    }
+
+    .avatar {
+        width: 38px !important;
+        height: 38px !important;
+        flex-basis: 38px !important;
+    }
+
+    .profile {
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .navbar-right {
+        gap: 6px !important;
+    }
+}
+
+/* ============================================================
+   DASAR
+============================================================ */
+
+.dashboard,
+.dashboard *,
+.dashboard *::before,
+.dashboard *::after {
+    box-sizing: border-box;
+}
+
+.dashboard {
+    container: dash / inline-size;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    color: var(--dash-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.dashboard img {
+    max-width: 100%;
+}
+
+.dashboard h1,
+.dashboard h2,
+.dashboard h3,
+.dashboard p {
+    margin: 0;
+}
+
+.dashboard a {
+    text-decoration: none;
+}
+
+.dashboard svg {
+    flex-shrink: 0;
+}
+
+/* bagian di bawah layar ditunda render-nya oleh browser */
+.dash-defer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 520px;
+}
+
+.dash-eyebrow {
+    display: inline-block;
+    margin-bottom: 6px;
+    color: var(--dash-accent-dark);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.section-title h2 {
+    font-family: var(--dash-font-head);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+
+.section-title span {
+    color: var(--dash-muted);
+    font-size: 13px;
+}
+
+.section-title a,
+.panel-link,
+.users-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--dash-accent-dark);
+    font-size: 13px;
+    font-weight: 700;
+    transition: color .2s ease;
+}
+
+.section-title a:hover,
+.panel-link:hover,
+.users-link:hover {
+    color: var(--dash-ink);
+}
+
+.section-title a svg,
+.panel-link svg,
+.users-link svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* kartu dasar dipakai bersama */
+.stat-card,
+.chart-card,
+.panel-card,
+.users-card,
+.expense-summary-card,
+.dashboard-date-card,
+.financial-card {
+    min-width: 0;
+    border: 1px solid var(--dash-border);
+    border-radius: var(--dash-radius);
+    background: var(--dash-card);
+    box-shadow: var(--dash-shadow);
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 36px 12px;
+    color: var(--dash-subtle);
+    font-size: 14px;
+    text-align: center;
+}
+
+.empty-state svg {
+    width: 28px;
+    height: 28px;
+    color: #c4c9d0;
+}
+
+.empty-state.is-ok svg {
+    color: var(--dash-green);
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+.dashboard-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.dashboard-header h1 {
+    font-family: var(--dash-font-head);
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.dashboard-header p {
+    margin-top: 8px;
+    color: var(--dash-muted);
+    font-size: 15px;
+}
+
+.dashboard-date-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px 12px 12px;
+    border-radius: 16px;
+}
+
+.date-icon {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--dash-accent-soft);
+    color: var(--dash-accent);
+}
+
+.date-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.date-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.date-subtitle {
+    color: var(--dash-muted);
+    font-size: 13px;
+}
+
+/* ============================================================
+   PENGINGAT HUTANG SUPPLIER
+============================================================ */
+
+.payable-alert {
+    --pay: var(--dash-yellow);
+    --pay-soft: var(--dash-yellow-soft);
+    --pay-border: #fde68a;
+
+    min-width: 0;
+    padding: 18px 20px;
+    border: 1px solid var(--pay-border);
+    border-left: 5px solid var(--pay);
+    border-radius: var(--dash-radius);
+    background: var(--pay-soft);
+}
+
+.payable-alert.is-danger {
+    --pay: var(--dash-red);
+    --pay-soft: var(--dash-red-soft);
+    --pay-border: #fecaca;
+}
+
+.payable-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 14px;
+}
+
+.payable-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--pay);
+    color: #fff;
+}
+
+.payable-icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+.payable-title {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.payable-title h2 {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.payable-title p {
+    margin-top: 2px;
+    color: var(--dash-ink-2);
+    font-size: 13px;
+}
+
+.payable-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 11px;
+    background: var(--dash-ink);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.payable-link:hover {
+    background: #000;
+}
+
+.payable-link svg {
+    width: 15px;
+    height: 15px;
+}
+
+.payable-list {
+    display: grid;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--pay-border);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.payable-list li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 6px 14px;
+    padding: 11px 14px;
+    border-top: 1px solid var(--dash-border);
+}
+
+.payable-list li:first-child {
+    border-top: 0;
+}
+
+.payable-supplier {
+    min-width: 0;
+}
+
+.payable-supplier strong,
+.payable-supplier small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.payable-supplier strong {
+    font-size: 14px;
+}
+
+.payable-supplier small {
+    color: var(--dash-muted);
+    font-size: 12px;
+}
+
+.payable-due {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--dash-yellow-soft);
+    color: var(--dash-yellow);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.payable-due.is-late {
+    background: var(--dash-red-soft);
+    color: var(--dash-red);
+}
+
+.payable-amount {
+    min-width: 96px;
+    font-family: var(--dash-font-head);
+    font-size: 19px;
+    font-weight: 800;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.payable-more {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--dash-ink-2);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+@container dash (max-width: 520px) {
+    .payable-alert {
+        padding: 16px;
+    }
+
+    .payable-link {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .payable-list li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .payable-supplier {
+        grid-column: 1 / -1;
+    }
+
+    .payable-amount {
+        min-width: 0;
+    }
+
+    .payable-due {
+        justify-self: start;
+    }
+}
+
+/* ============================================================
+   PANEL BULAN INI (gelap)
+============================================================ */
+
+.month-panel {
+    overflow: hidden;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255, 106, 26, .28), transparent 42%),
+        linear-gradient(160deg, #171b21 0%, #0c0e11 100%);
+    color: #eef1f5;
+}
+
+.month-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 24px 26px 18px;
+}
+
+.month-panel-head .dash-eyebrow {
+    color: var(--dash-accent-2);
+}
+
+.month-panel-head h2 {
+    font-family: var(--dash-font-head);
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.month-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 999px;
+    color: #c3cad4;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.month-chip svg {
+    width: 15px;
+    height: 15px;
+    color: var(--dash-accent);
+}
+
+/* garis pemisah antar-metrik dibuat dengan box-shadow sehingga
+   rapi berapa pun jumlah kolomnya */
+.month-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.metric {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px 24px 22px;
+    box-shadow: -1px 0 0 rgba(255, 255, 255, .08), 0 -1px 0 rgba(255, 255, 255, .08);
+}
+
+.metric:last-child {
+    grid-column: 1 / -1;
+}
+
+.metric-label {
+    color: #8d97a5;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.metric-value {
+    font-family: var(--dash-font-head);
+    /* cqi = % lebar area konten, jadi angka ikut mengecil saat sempit */
+    font-size: clamp(20px, 2.5cqi, 30px);
+    font-weight: 800;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+}
+
+.metric-foot {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #8d97a5;
+    font-size: 12px;
+}
+
+.metric-foot svg {
+    width: 14px;
+    height: 14px;
+}
+
+.metric.is-accent {
+    background: rgba(255, 106, 26, .10);
+}
+
+.metric.is-accent .metric-value {
+    color: var(--dash-accent-2);
+}
+
+/* tablet & laptop kecil: 2 metrik di baris atas, 3 di bawah */
+@container dash (min-width: 640px) {
+    .month-metrics {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .metric {
+        grid-column: span 2;
+    }
+
+    .metric:nth-child(-n+2) {
+        grid-column: span 3;
+    }
+
+    .metric:last-child {
+        grid-column: span 2;
+    }
+}
+
+/* laptop lebar: 5 metrik sejajar */
+@container dash (min-width: 1180px) {
+    .month-metrics {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .metric,
+    .metric:nth-child(-n+2),
+    .metric:last-child {
+        grid-column: auto;
+    }
+}
+
+/* ============================================================
+   KARTU STATISTIK
+============================================================ */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.dashboard-grid.compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+@container dash (min-width: 480px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container dash (min-width: 1000px) {
+
+    .dashboard-grid,
+    .dashboard-grid.compact {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+.stat-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--dash-shadow-hover);
+}
+
+.stat-icon {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+}
+
+.stat-icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+.stat-icon.orange { background: var(--dash-accent-soft); color: var(--dash-accent); }
+.stat-icon.red    { background: var(--dash-red-soft);    color: var(--dash-red); }
+.stat-icon.green  { background: var(--dash-green-soft);  color: var(--dash-green); }
+.stat-icon.slate  { background: var(--dash-slate-soft);  color: var(--dash-slate); }
+.stat-icon.yellow { background: var(--dash-yellow-soft); color: var(--dash-yellow); }
+
+.stat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-title {
+    color: var(--dash-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stat-number {
+    margin-top: 4px;
+    font-family: var(--dash-font-head);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+}
+
+.stat-desc {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    color: var(--dash-muted);
+    font-size: 12px;
+}
+
+.stat-desc svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* kartu cash · transfer */
+.pay-split {
+    display: grid;
+    /* berdampingan kalau muat, bertumpuk kalau kartu sempit */
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.pay-split small {
+    display: block;
+    color: var(--dash-subtle);
+    font-size: 11px;
+}
+
+.pay-split strong {
+    display: block;
+    font-family: var(--dash-font-head);
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+.split-bar {
+    display: flex;
+    height: 6px;
+    margin-top: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--dash-border);
+}
+
+.split-bar .is-cash { background: var(--dash-accent); }
+.split-bar .is-transfer { background: var(--dash-ink-2); }
+
+/* tablet: kartu 2 kolom → ikon di atas supaya angka Rupiah punya ruang */
+@container dash (min-width: 480px) and (max-width: 759px) {
+    .dashboard-grid .stat-card {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .dashboard-grid .stat-content {
+        align-self: stretch;
+    }
+
+    .dashboard-grid .stat-icon {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+        border-radius: 11px;
+    }
+}
+
+/* kartu ringkas (katalog) di layar sempit */
+@container dash (max-width: 479px) {
+    .dashboard-grid.compact .stat-card {
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .dashboard-grid.compact .stat-content {
+        align-self: stretch;
+    }
+
+    .dashboard-grid.compact .stat-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        border-radius: 11px;
+    }
+
+    .dashboard-grid.compact .stat-number {
+        font-size: 24px;
+    }
+}
+
+@container dash (max-width: 300px) {
+    .dashboard-grid.compact {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   PROGRESS (dipakai rincian pengeluaran)
+============================================================ */
+
+.progress {
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--dash-border);
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--dash-accent);
+}
+
+/* ============================================================
+   GRAFIK
+============================================================ */
+
+.dashboard-chart-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@container dash (min-width: 980px) {
+    .dashboard-chart-grid {
+        grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    }
+}
+
+.chart-card {
+    padding: 22px;
+}
+
+.chart-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.chart-title {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.chart-header p {
+    margin-top: 3px;
+    color: var(--dash-muted);
+    font-size: 13px;
+}
+
+.chart-badge {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--dash-accent-soft);
+    color: var(--dash-accent-dark);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* tinggi tetap → tidak ada pergeseran layout saat grafik dimuat */
+.chart-canvas {
+    position: relative;
+    width: 100%;
+}
+
+.chart-canvas-lg { height: 320px; }
+.chart-canvas-sm { height: 230px; }
+
+.chart-skeleton {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    background: linear-gradient(90deg, var(--dash-soft) 25%, #eceef2 50%, var(--dash-soft) 75%);
+    background-size: 200% 100%;
+    animation: dashShimmer 1.4s linear infinite;
+}
+
+.chart-skeleton.is-round {
+    inset: 10px;
+    margin: auto;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+}
+
+@keyframes dashShimmer {
+    to { background-position: -200% 0; }
+}
+
+.payment-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-info {
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.payment-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 0;
+    border-top: 1px solid var(--dash-border);
+    font-size: 14px;
+}
+
+.payment-row > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--dash-ink-2);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot.cash { background: var(--dash-accent); }
+.dot.transfer { background: var(--dash-ink-2); }
+
+/* tablet: donut & keterangan berdampingan */
+@container dash (min-width: 600px) and (max-width: 979px) {
+    .payment-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 24px;
+        align-items: center;
+    }
+
+    .payment-card .chart-header {
+        grid-column: 1 / -1;
+    }
+
+    .payment-info {
+        margin-top: 0;
+    }
+}
+
+@container dash (max-width: 519px) {
+    .chart-card {
+        padding: 16px;
+    }
+
+    .chart-canvas-lg {
+        height: 260px;
+    }
+}
+
+/* ============================================================
+   RINCIAN PENGELUARAN
+============================================================ */
+
+.expense-summary-card {
+    padding: 22px;
+}
+
+.expense-summary-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.expense-summary-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.expense-summary-header p {
+    margin-top: 3px;
+    color: var(--dash-muted);
+    font-size: 13px;
+}
+
+.expense-summary-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border: 1px solid var(--dash-border);
+    border-radius: 11px;
+    color: var(--dash-ink);
+    font-size: 13px;
+    font-weight: 700;
+    transition: background .2s ease, color .2s ease;
+}
+
+.expense-summary-link:hover {
+    border-color: var(--dash-ink);
+    background: var(--dash-ink);
+    color: #fff;
+}
+
+.expense-summary-link svg {
+    width: 15px;
+    height: 15px;
+}
+
+.expense-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+@container dash (min-width: 480px) {
+    .expense-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container dash (min-width: 900px) {
+    .expense-summary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+    }
+}
+
+.expense-category {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--dash-border);
+    border-radius: 14px;
+    background: var(--dash-soft);
+}
+
+.expense-category-icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+}
+
+.expense-category-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.expense-category-icon.salary      { background: var(--dash-slate-soft);  color: var(--dash-slate); }
+.expense-category-icon.operational { background: var(--dash-accent-soft); color: var(--dash-accent); }
+.expense-category-icon.electricity { background: var(--dash-yellow-soft); color: var(--dash-yellow); }
+.expense-category-icon.unexpected  { background: var(--dash-red-soft);    color: var(--dash-red); }
+
+.expense-category-content {
+    min-width: 0;
+}
+
+.expense-category-content span {
+    display: block;
+    color: var(--dash-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.expense-category-content strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 15px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.expense-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--dash-border);
+}
+
+.expense-total > div:first-child span {
+    display: block;
+    color: var(--dash-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.expense-total > div:first-child strong {
+    font-family: var(--dash-font-head);
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.expense-percentage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: min(100%, 280px);
+}
+
+.expense-percentage .progress {
+    flex: 1;
+    min-width: 80px;
+}
+
+.expense-percentage strong {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.expense-percentage small {
+    color: var(--dash-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   PRODUK & PENGGUNA
+============================================================ */
+
+.dashboard-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@container dash (min-width: 1080px) {
+    .dashboard-grid-2 {
+        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+        align-items: start;
+    }
+}
+
+.product-panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    min-width: 0;
+}
+
+/* tablet: terlaris & stok menipis berdampingan */
+@container dash (min-width: 720px) {
+    .product-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+    }
+}
+
+.panel-card,
+.users-card {
+    padding: 20px;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.panel-header h3,
+.users-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.panel-header span {
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: var(--dash-soft);
+    color: var(--dash-muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.panel-header span.is-warning {
+    background: var(--dash-red-soft);
+    color: var(--dash-red);
+}
+
+.product-item,
+.stock-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--dash-border);
+}
+
+.panel-header + .product-item,
+.panel-header + .stock-item {
+    border-top: 0;
+}
+
+.product-left {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.product-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.product-rank {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--dash-soft);
+    color: var(--dash-muted);
+    font-family: var(--dash-font-head);
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.product-rank.is-top {
+    background: var(--dash-accent-soft);
+    color: var(--dash-accent);
+}
+
+.product-name {
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-info small {
+    color: var(--dash-muted);
+    font-size: 12px;
+}
+
+.rank-bar {
+    display: block;
+    height: 4px;
+    margin-top: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--dash-soft);
+}
+
+.rank-bar span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--dash-accent), var(--dash-accent-2));
+}
+
+.product-right {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.stock-badge {
+    flex-shrink: 0;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: var(--dash-yellow-soft);
+    color: var(--dash-yellow);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.stock-badge.is-empty {
+    background: var(--dash-red-soft);
+    color: var(--dash-red);
+}
+
+.panel-link {
+    margin-top: 8px;
+}
+
+/* ---------- pengguna ---------- */
+.users-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.users-header p {
+    margin-top: 3px;
+    color: var(--dash-muted);
+    font-size: 13px;
+}
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    border-top: 1px solid var(--dash-border);
+}
+
+.user-item:first-child {
+    border-top: 0;
+}
+
+.user-avatar {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--dash-ink-2);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name,
+.user-email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.user-email {
+    color: var(--dash-muted);
+    font-size: 12px;
+}
+
+.user-right {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.user-role {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--dash-accent-soft);
+    color: var(--dash-accent-dark);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.user-right small {
+    display: block;
+    margin-top: 4px;
+    color: var(--dash-subtle);
+    font-size: 11px;
+}
+
+@container dash (max-width: 420px) {
+    .user-right small {
+        display: none;
+    }
+}
+
+/* ============================================================
+   KOMPONEN BERSAMA
+   Tidak dipakai di dashboard lagi, tetapi dipertahankan karena
+   bisa jadi dipakai halaman lain (mis. Transaksi / Pengeluaran).
+   Hapus bagian ini bila halaman lain memang tidak memakainya.
+============================================================ */
+
+.dashboard-highlight,
+.financial-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: 16px;
+}
+
+.highlight-card {
+    position: relative;
+    min-width: 0;
+    padding: 22px;
+    overflow: hidden;
+    border-radius: var(--dash-radius);
+    background: linear-gradient(160deg, #171b21, #0c0e11);
+    color: #fff;
+}
+
+.highlight-card.profit,
+.highlight-card.green { background: linear-gradient(135deg, #15803d, #16a34a); }
+.highlight-card.tax,
+.highlight-card.brown { background: linear-gradient(135deg, #2a2f37, #475569); }
+.highlight-card.orange { background: linear-gradient(135deg, var(--dash-accent), var(--dash-accent-2)); }
+.highlight-card.blue { background: linear-gradient(135deg, #334155, #64748b); }
+
+.highlight-title { font-size: 13px; opacity: .85; }
+.highlight-value { margin-top: 8px; font-family: var(--dash-font-head); font-size: 30px; font-weight: 800; overflow-wrap: anywhere; }
+.highlight-footer { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; opacity: .85; }
+.highlight-footer svg { width: 16px; height: 16px; }
+
+.financial-card { display: flex; align-items: center; gap: 14px; padding: 18px; }
+.financial-icon { width: 46px; height: 46px; flex: 0 0 46px; display: grid; place-items: center; border-radius: 13px; }
+.financial-icon svg { width: 20px; height: 20px; }
+.financial-card span { display: block; color: var(--dash-muted); font-size: 12px; font-weight: 600; }
+.financial-card strong { display: block; font-size: 20px; font-weight: 800; overflow-wrap: anywhere; }
+.financial-card.revenue .financial-icon { background: var(--dash-accent-soft); color: var(--dash-accent); }
+.financial-card.expense .financial-icon { background: var(--dash-red-soft); color: var(--dash-red); }
+.financial-card.profit .financial-icon { background: var(--dash-green-soft); color: var(--dash-green); }
+.financial-card.tax .financial-icon { background: var(--dash-slate-soft); color: var(--dash-slate); }
+
+/* ============================================================
+   HP (berdasarkan layar)
+============================================================ */
+
+@media (max-width: 768px) {
+    .dashboard {
+        gap: 22px;
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dashboard-header h1 {
+        font-size: 36px;
+    }
+
+    .dashboard-date-card {
+        width: 100%;
+    }
+
+    .month-panel-head {
+        padding: 20px 18px 14px;
+    }
+
+    .metric {
+        padding: 16px 18px 18px;
+    }
+
+    .expense-summary-card,
+    .panel-card,
+    .users-card {
+        padding: 16px;
+    }
+
+    /* matikan efek hover di layar sentuh */
+    .stat-card:hover {
+        transform: none;
+        box-shadow: var(--dash-shadow);
+    }
+}
+
+@media (max-width: 380px) {
+    .dashboard-header h1 {
+        font-size: 32px;
+    }
+
+    .metric-value {
+        font-size: 22px;
+    }
+}
+
+/* ============================================================
+   PERINGATAN JATUH TEMPO SERVER (navbar)
+   ============================================================ */
+
+.server-due {
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    flex: 0 0 auto;
+    padding: 0 13px 0 11px;
+    border: 1px solid #f3d38a;
+    border-radius: 12px;
+    background: #fef7e6;
+    color: #8a5a0b;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: filter .2s ease;
+}
+
+.server-due:hover {
+    filter: brightness(.96);
+}
+
+.server-due svg {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
+}
+
+.server-due-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.server-due-text small {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: .85;
+}
+
+.server-due-text strong {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.server-due.is-urgent,
+.server-due.is-overdue {
+    border-color: #f5b5b5;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.server-due.is-overdue {
+    border-color: #dc2626;
+    background: #dc2626;
+    color: #fff;
+}
+
+@media (max-width: 992px) {
+    .server-due-text small {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .server-due {
+        height: 40px;
+        padding: 0 10px;
+        gap: 6px;
+    }
+
+    .server-due-text strong {
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .dashboard *,
+    .dashboard *::before,
+    .dashboard *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

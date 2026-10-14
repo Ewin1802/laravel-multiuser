@@ -1,0 +1,376 @@
+/* ============================================================
+   SIDEBAR — GARASI PART
+   Tema: graphite gelap + aksen oranye (sama dengan landing & auth)
+
+   Class dari layout/JS yang dipakai:
+   - body.sidebar-collapse → sidebar ringkas (ikon saja), desktop/tablet
+   - body.sidebar-open     → sidebar terbuka di HP
+============================================================ */
+
+.sidebar {
+    --sb-bg: #12151a;
+    --sb-line: rgba(255, 255, 255, .08);
+    --sb-text: #aeb7c3;
+    --sb-muted: #5d6572;
+    --sb-accent: #ff6a1a;
+    --sb-accent-2: #ffae1f;
+
+    position: fixed;
+    z-index: 1000;
+    top: 20px;
+    bottom: 20px;
+    left: 20px;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 18px;
+    overflow: hidden;
+    border: 1px solid var(--sb-line);
+    border-radius: 26px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255, 106, 26, .16), transparent 40%),
+        linear-gradient(180deg, #171b21 0%, var(--sb-bg) 100%);
+    box-shadow: 0 25px 60px rgba(12, 14, 17, .25);
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: width .3s ease, padding .3s ease, transform .3s ease;
+}
+
+/* ============================================================
+   BRAND
+============================================================ */
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 0 6px 22px;
+    border-bottom: 1px solid var(--sb-line);
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar .brand-mark {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 13px;
+    background: linear-gradient(135deg, var(--sb-accent), var(--sb-accent-2));
+    box-shadow: 0 10px 24px rgba(255, 106, 26, .3);
+    transition: transform .35s ease;
+}
+
+.sidebar-brand:hover .brand-mark {
+    transform: rotate(-8deg);
+}
+
+.sidebar .brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sidebar .brand-mark svg {
+    width: 22px;
+    height: 22px;
+}
+
+.sidebar .brand-copy {
+    min-width: 0;
+    line-height: 1.1;
+}
+
+.sidebar .brand-copy strong {
+    display: block;
+    overflow: hidden;
+    font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.sidebar .brand-copy small {
+    display: block;
+    margin-top: 4px;
+    color: var(--sb-muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ============================================================
+   MENU (scroll sendiri bila menu panjang)
+============================================================ */
+
+.sidebar-menu {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 14px;
+    padding-right: 2px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, .15) transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .15);
+}
+
+.menu-group {
+    margin: 10px 0 2px;
+    padding: 0 14px;
+    color: var(--sb-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.menu-group:first-child {
+    margin-top: 6px;
+}
+
+.sidebar-menu a,
+.sidebar-logout {
+    position: relative;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 0 14px;
+    border-radius: 13px;
+    color: var(--sb-text);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .2s ease, color .2s ease;
+}
+
+.sidebar-menu a:hover {
+    background: rgba(255, 255, 255, .06);
+    color: #fff;
+}
+
+/* indikator garis oranye di kiri */
+.sidebar-menu a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 0;
+    border-radius: 0 3px 3px 0;
+    background: var(--sb-accent);
+    transform: translateY(-50%);
+    transition: height .2s ease;
+}
+
+.sidebar-menu a:hover::before {
+    height: 18px;
+}
+
+.sidebar-menu a.active {
+    background: rgba(255, 106, 26, .12);
+    color: #fff;
+}
+
+.sidebar-menu a.active::before {
+    height: 26px;
+}
+
+.sidebar-menu a.active .menu-icon {
+    color: var(--sb-accent);
+}
+
+.menu-icon {
+    width: 22px;
+    flex: 0 0 22px;
+    display: grid;
+    place-items: center;
+}
+
+.menu-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.menu-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menu-badge {
+    margin-left: auto;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--sb-accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+/* pengingat hutang supplier */
+.menu-badge.is-danger {
+    background: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, .25);
+}
+
+.menu-badge.is-warning {
+    background: #ffae1f;
+    color: #14171c;
+}
+
+/* ============================================================
+   FOOTER / LOGOUT
+============================================================ */
+
+.sidebar-footer {
+    padding-top: 14px;
+    border-top: 1px solid var(--sb-line);
+}
+
+.sidebar-logout {
+    width: 100%;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.sidebar-logout:hover {
+    background: rgba(239, 68, 68, .12);
+    color: #fca5a5;
+}
+
+.sidebar a:focus-visible,
+.sidebar button:focus-visible {
+    outline: 2px solid var(--sb-accent);
+    outline-offset: 2px;
+}
+
+.sidebar-backdrop {
+    display: none;
+}
+
+/* ============================================================
+   COLLAPSED — hanya berlaku di tablet & laptop
+   (di HP sidebar selalu tampil penuh saat dibuka)
+============================================================ */
+
+@media (min-width: 769px) {
+    body.sidebar-collapse .sidebar {
+        width: 90px;
+        padding: 22px 13px;
+    }
+
+    body.sidebar-collapse .sidebar-brand {
+        justify-content: center;
+        padding: 0 0 20px;
+    }
+
+    body.sidebar-collapse .sidebar .brand-copy,
+    body.sidebar-collapse .menu-title,
+    body.sidebar-collapse .menu-group {
+        display: none;
+    }
+
+    body.sidebar-collapse .sidebar-menu a,
+    body.sidebar-collapse .sidebar-logout {
+        justify-content: center;
+        padding: 0;
+    }
+
+    /* badge jadi titik kecil di pojok ikon */
+    body.sidebar-collapse .menu-badge {
+        position: absolute;
+        top: 7px;
+        right: 12px;
+        padding: 0 5px;
+        font-size: 9px;
+    }
+}
+
+/* ============================================================
+   TABLET  ≤ 992px
+============================================================ */
+
+@media (max-width: 992px) {
+    .sidebar {
+        top: 15px;
+        bottom: 15px;
+        left: 15px;
+        width: 240px;
+        border-radius: 22px;
+    }
+}
+
+/* ============================================================
+   HP  ≤ 768px — sidebar jadi laci (drawer) dari kiri
+============================================================ */
+
+@media (max-width: 768px) {
+    .sidebar {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: min(280px, 85vw);
+        border-radius: 0 22px 22px 0;
+        transform: translateX(-105%);
+    }
+
+    body.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar-backdrop {
+        position: fixed;
+        z-index: 999;
+        inset: 0;
+        display: block;
+        background: rgba(5, 6, 8, .55);
+        backdrop-filter: blur(3px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .3s ease, visibility .3s ease;
+    }
+
+    body.sidebar-open .sidebar-backdrop {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
+    .sidebar-menu a,
+    .sidebar-logout {
+        min-height: 48px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sidebar,
+    .sidebar *,
+    .sidebar-backdrop {
+        transition: none !important;
+    }
+}

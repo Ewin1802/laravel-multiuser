@@ -1,0 +1,1096 @@
+/* ============================================================
+   GARASI PART — AUTH PAGES
+   Login · Register · Lupa Password
+   Tema mengikuti landing page: graphite gelap + aksen oranye
+   Breakpoint: 1100 (laptop kecil) · 900 (tablet landscape)
+               820 (tablet portrait) · 560 (hp) · 380 (hp kecil)
+   ============================================================ */
+
+:root {
+    --bg: #0c0e11;
+    --bg-2: #12151a;
+    --panel: #171b21;
+    --panel-2: #1e232b;
+    --line: rgba(255, 255, 255, .08);
+    --line-strong: rgba(255, 255, 255, .14);
+    --text-light: #eef1f5;
+    --muted-light: #8d97a5;
+
+    --surface: #f3f4f6;
+    --card: #ffffff;
+    --ink: #14171c;
+    --ink-2: #2a2f37;
+    --ink-muted: #667080;
+    --border: #e2e5ea;
+    --border-hover: #cdd2d9;
+
+    --accent: #ff6a1a;
+    --accent-2: #ffae1f;
+    --accent-dark: #e2550a;
+    --accent-soft: rgba(255, 106, 26, .12);
+
+    --green: #22c55e;
+    --green-dark: #15803d;
+    --green-bg: #ecfdf3;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+
+    --shadow: 0 30px 80px rgba(15, 18, 24, .10);
+    --ease: cubic-bezier(.2, .8, .2, 1);
+    --font-head: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
+.auth-page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(460px, .9fr);
+}
+
+/* ============================================================
+   KIRI / SHOWCASE (gelap)
+   ============================================================ */
+
+.auth-showcase {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    color: var(--text-light);
+    background:
+        radial-gradient(circle at 85% 10%, rgba(255, 106, 26, .25), transparent 35%),
+        radial-gradient(circle at 0% 100%, rgba(255, 174, 31, .10), transparent 35%),
+        linear-gradient(160deg, #0c0e11 0%, #141820 55%, #0c0e11 100%);
+}
+
+/* grid garis tipis ala blueprint teknik */
+.showcase-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(160deg, #000 20%, transparent 85%);
+    -webkit-mask-image: linear-gradient(160deg, #000 20%, transparent 85%);
+    pointer-events: none;
+}
+
+/* gir besar berputar sebagai dekorasi */
+.showcase-gear {
+    position: absolute;
+    right: -120px;
+    bottom: -120px;
+    width: 420px;
+    height: 420px;
+    color: rgba(255, 255, 255, .035);
+    animation: spin 40s linear infinite;
+    pointer-events: none;
+}
+
+.showcase-gear svg {
+    width: 100%;
+    height: 100%;
+    stroke-width: 1;
+}
+
+.showcase-inner {
+    position: relative;
+    z-index: 2;
+    width: min(760px, 100%);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 40px clamp(36px, 5vw, 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* ---------- Brand ---------- */
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    min-width: 0;
+}
+
+.brand-mark {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 12px 28px rgba(255, 106, 26, .32);
+    transition: transform .35s var(--ease);
+}
+
+.brand:hover .brand-mark {
+    transform: rotate(-8deg) scale(1.05);
+}
+
+.brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.brand-mark svg {
+    width: 22px;
+    height: 22px;
+}
+
+.brand-copy {
+    min-width: 0;
+}
+
+.brand-copy strong {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.brand-copy small {
+    display: block;
+    margin-top: 5px;
+    overflow: hidden;
+    color: var(--muted-light);
+    font-size: 11px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- Konten ---------- */
+.showcase-content {
+    max-width: 620px;
+    margin: 56px 0;
+}
+
+.showcase-kicker,
+.form-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.showcase-kicker {
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 174, 31, .25);
+    border-radius: 999px;
+    background: rgba(255, 174, 31, .07);
+    color: var(--accent-2);
+}
+
+.showcase-kicker svg,
+.form-eyebrow svg {
+    width: 14px;
+    height: 14px;
+}
+
+.showcase-content h1 {
+    margin-top: 24px;
+    font-family: var(--font-head);
+    font-size: clamp(52px, 6vw, 86px);
+    font-weight: 800;
+    line-height: .95;
+    letter-spacing: -.5px;
+    text-transform: uppercase;
+}
+
+.showcase-content h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.showcase-content>p {
+    max-width: 540px;
+    margin-top: 22px;
+    color: #aeb7c3;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.showcase-features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 34px;
+}
+
+.feature {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(23, 27, 33, .7);
+    backdrop-filter: blur(8px);
+    transition: .3s var(--ease);
+}
+
+.feature:hover {
+    border-color: rgba(255, 106, 26, .35);
+    transform: translateY(-3px);
+}
+
+.feature>span {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.feature>span svg {
+    width: 19px;
+    height: 19px;
+}
+
+.feature strong {
+    display: block;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.feature small {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted-light);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+/* langkah-langkah (dipakai halaman lupa password) */
+.showcase-steps {
+    display: grid;
+    gap: 10px;
+    margin-top: 34px;
+    counter-reset: step;
+}
+
+.showcase-steps li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(23, 27, 33, .7);
+    color: #c3cad4;
+    font-size: 13px;
+    list-style: none;
+    counter-increment: step;
+}
+
+.showcase-steps li::before {
+    content: counter(step);
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--font-head);
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.showcase-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #5d6572;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.online {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.online i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+}
+
+/* ============================================================
+   KANAN / FORM (terang)
+   ============================================================ */
+
+.auth-form-area {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px clamp(24px, 4vw, 56px);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255, 106, 26, .07), transparent 30%),
+        var(--surface);
+}
+
+.auth-card {
+    width: min(100%, 460px);
+    padding: 42px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    animation: authIn .55s var(--ease) both;
+}
+
+.mobile-brand {
+    display: none;
+}
+
+.form-header {
+    margin-bottom: 28px;
+}
+
+.form-eyebrow {
+    margin-bottom: 12px;
+    padding: 6px 11px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-size: 10px;
+}
+
+.form-header h2 {
+    font-family: var(--font-head);
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--ink);
+}
+
+.form-header p {
+    max-width: 380px;
+    margin-top: 10px;
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* ---------- Alert ---------- */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.alert svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin-top: 1px;
+}
+
+.alert-success {
+    border-color: #bbf7d0;
+    background: var(--green-bg);
+    color: var(--green-dark);
+}
+
+/* ---------- Field ---------- */
+/* satu kolom secara default; dua kolom hanya di tablet portrait
+   (kartu form paling lebar di sana) — lihat media query 820px */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.input-wrap {
+    position: relative;
+}
+
+.input-wrap input {
+    width: 100%;
+    height: 52px;
+    padding: 0 48px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    background: #fafbfc;
+    color: var(--ink);
+    font-size: 14px;
+    transition: .25s ease;
+}
+
+.input-wrap input::placeholder {
+    color: #9aa2ae;
+}
+
+.input-wrap input:hover {
+    border-color: var(--border-hover);
+}
+
+.input-wrap input:focus {
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 106, 26, .12);
+}
+
+.input-wrap input[aria-invalid="true"] {
+    border-color: #fca5a5;
+}
+
+.field-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    color: #9aa2ae;
+    pointer-events: none;
+    transition: .25s ease;
+}
+
+.input-wrap:focus-within .field-icon {
+    color: var(--accent);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    width: 38px;
+    height: 38px;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: #8a93a0;
+    transition: .25s ease;
+}
+
+.password-toggle:hover {
+    background: var(--surface);
+    color: var(--ink);
+}
+
+.password-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+.field-hint {
+    margin-top: 6px;
+    color: var(--ink-muted);
+    font-size: 12px;
+}
+
+/* ---------- Opsi (ingat saya / lupa password) ---------- */
+.auth-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 2px 0 22px;
+}
+
+.remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.remember input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+.auth-options a,
+.switch-auth a {
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.auth-options a:hover,
+.switch-auth a:hover {
+    color: var(--ink);
+}
+
+/* ---------- Tombol ---------- */
+.submit-button {
+    position: relative;
+    width: 100%;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 12px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), #ff8a2a);
+    font-size: 15px;
+    font-weight: 700;
+    box-shadow: 0 14px 32px rgba(255, 106, 26, .30);
+    transition: .3s var(--ease);
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(255, 106, 26, .40);
+}
+
+.submit-button:active {
+    transform: scale(.985);
+}
+
+.submit-button svg {
+    width: 18px;
+    height: 18px;
+    transition: transform .25s ease;
+}
+
+.submit-button:hover svg {
+    transform: translateX(3px);
+}
+
+.submit-button.loading {
+    pointer-events: none;
+    opacity: .85;
+}
+
+.submit-button.loading .btn-text,
+.submit-button.loading>svg {
+    opacity: 0;
+}
+
+.submit-button.loading::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, .4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+}
+
+/* ---------- Catatan keamanan ---------- */
+.security-note {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #fafbfc;
+}
+
+.security-note>span {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.security-note>span svg {
+    width: 18px;
+    height: 18px;
+}
+
+.security-note strong {
+    display: block;
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.security-note p {
+    margin-top: 3px;
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+form .security-note {
+    margin: 4px 0 20px;
+}
+
+.switch-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 22px;
+    color: var(--ink-muted);
+    font-size: 13px;
+}
+
+.back-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 22px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+.back-link:hover {
+    color: var(--accent-dark);
+}
+
+.back-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+.form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: #9aa2ae;
+    font-size: 11px;
+    text-align: center;
+}
+
+.form-footer i {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #c4c9d0;
+}
+
+/* ============================================================
+   ANIMASI
+   ============================================================ */
+
+@keyframes authIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, .5);
+    }
+
+    70% {
+        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+/* ============================================================
+   LAPTOP KECIL  ≤ 1100px
+   ============================================================ */
+
+@media (max-width: 1100px) {
+    .auth-page {
+        grid-template-columns: minmax(0, 1fr) minmax(430px, .95fr);
+    }
+
+    .showcase-inner {
+        padding: 36px 44px;
+    }
+
+    .showcase-content h1 {
+        font-size: clamp(48px, 5.6vw, 70px);
+    }
+
+    .auth-card {
+        padding: 36px;
+    }
+}
+
+/* ============================================================
+   TABLET LANDSCAPE  ≤ 900px
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .auth-page {
+        grid-template-columns: 42% 58%;
+    }
+
+    .showcase-inner {
+        padding: 30px 28px;
+    }
+
+    .showcase-content {
+        margin: 36px 0;
+    }
+
+    .showcase-content h1 {
+        font-size: clamp(42px, 5.4vw, 54px);
+    }
+
+    .showcase-content>p {
+        font-size: 13px;
+    }
+
+    .showcase-features {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .feature {
+        padding: 11px;
+    }
+
+    .auth-form-area {
+        padding: 28px 22px;
+    }
+
+    .auth-card {
+        padding: 32px 26px;
+    }
+
+    .form-header h2 {
+        font-size: 38px;
+    }
+}
+
+/* ============================================================
+   TABLET PORTRAIT  ≤ 820px
+   Layout bertumpuk: showcase jadi banner ringkas di atas
+   ============================================================ */
+
+@media (max-width: 820px) {
+    .auth-page {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .auth-showcase {
+        min-height: auto;
+    }
+
+    .showcase-gear {
+        width: 300px;
+        height: 300px;
+        right: -90px;
+        top: -90px;
+        bottom: auto;
+    }
+
+    .showcase-inner {
+        width: min(640px, 100%);
+        min-height: auto;
+        padding: 30px 28px 70px;
+    }
+
+    .showcase-content {
+        margin: 34px 0 0;
+    }
+
+    .showcase-content h1 {
+        margin-top: 18px;
+        font-size: clamp(46px, 8vw, 62px);
+    }
+
+    .showcase-content>p {
+        max-width: 520px;
+        margin-top: 14px;
+        font-size: 14px;
+    }
+
+    .showcase-features {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 24px;
+    }
+
+    .showcase-steps,
+    .showcase-footer {
+        display: none;
+    }
+
+    /* kartu form naik menimpa banner */
+    .auth-form-area {
+        flex: 1;
+        min-height: auto;
+        place-items: start center;
+        padding: 0 28px 40px;
+        background: var(--surface);
+    }
+
+    .auth-card {
+        width: min(100%, 560px);
+        margin-top: -44px;
+        position: relative;
+        z-index: 3;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+}
+
+/* ============================================================
+   HP PORTRAIT  ≤ 560px
+   ============================================================ */
+
+@media (max-width: 560px) {
+    .showcase-inner {
+        padding: 22px 18px 60px;
+    }
+
+    .brand-mark {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        border-radius: 12px;
+    }
+
+    .brand-copy strong {
+        font-size: 22px;
+    }
+
+    .brand-copy small {
+        max-width: 220px;
+        font-size: 10px;
+    }
+
+    .showcase-content {
+        margin-top: 26px;
+    }
+
+    .showcase-kicker {
+        padding: 6px 11px;
+        font-size: 9px;
+        letter-spacing: 1.1px;
+    }
+
+    .showcase-content h1 {
+        margin-top: 14px;
+        font-size: clamp(40px, 12vw, 50px);
+    }
+
+    .showcase-content>p {
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .showcase-features {
+        display: none;
+    }
+
+    .auth-form-area {
+        padding: 0 14px 28px;
+    }
+
+    .auth-card {
+        margin-top: -38px;
+        padding: 26px 20px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(15, 18, 24, .10);
+    }
+
+    .form-header {
+        margin-bottom: 22px;
+    }
+
+    .form-header h2 {
+        font-size: 34px;
+    }
+
+    .form-header p {
+        font-size: 13px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .input-wrap input {
+        height: 50px;
+        /* 16px mencegah iOS auto-zoom saat fokus input */
+        font-size: 16px;
+    }
+
+    .submit-button {
+        min-height: 52px;
+    }
+
+    .security-note {
+        padding: 12px;
+    }
+}
+
+/* ============================================================
+   HP KECIL  ≤ 380px
+   ============================================================ */
+
+@media (max-width: 380px) {
+    .showcase-content>p {
+        display: none;
+    }
+
+    .showcase-inner {
+        padding-bottom: 54px;
+    }
+
+    .auth-form-area {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .auth-card {
+        padding: 22px 16px;
+    }
+
+    .form-header h2 {
+        font-size: 30px;
+    }
+
+    .auth-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
