@@ -36,16 +36,14 @@
             </form>
             <div class="p-table-wrap">
                 <table class="p-table p-table-plain">
-                    <thead><tr><th>Diterima</th><th>Toko</th><th>Jenis</th><th>Jam HP</th><th>Perkiraan jam asli</th><th class="text-end">Selisih</th></tr></thead>
+                    <thead><tr><th>Diterima</th><th>Toko</th><th>Jenis</th><th>Jam HP</th><th>Jam sebenarnya</th><th class="text-end">Selisih jam HP</th></tr></thead>
                     <tbody>
                         @forelse ($logs as $t)
                             <tr>
                                 <td>{{ $fmt($t->created_at) }}</td>
                                 <td><a class="p-link" href="{{ route('superadmin.stores.show', $t->store_id) }}">{{ $storeNames[$t->store_id] ?? '#' . $t->store_id }}</a></td>
                                 <td>{{ $kinds[$t->kind] ?? $t->kind }}</td>
-                                <td class="s-mono">{{ $t->device_time ?: '-' }}</td>
-                                <td class="s-mono">{{ $t->trusted_time ?: '-' }}</td>
-                                <td class="text-end">{{ $t->drift_seconds !== null ? round($t->drift_seconds / 60) . ' mnt' : '-' }}</td>
+                                        @include('pages.superadmin.tamper._cells')
                             </tr>
                         @empty
                             <tr><td colspan="6"><span class="p-hint">Belum ada kejadian.</span></td></tr>
