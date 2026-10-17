@@ -3669,3 +3669,14 @@ button.p-chip {
         width: 100%;
     }
 }
+
+/* Kolom jumlah stok masuk: tanpa panah naik/turun (bisa ikut berubah saat di-scroll) */
+.p-line input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+.p-line input[type="number"]::-webkit-inner-spin-button,
+.p-line input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

@@ -297,6 +297,7 @@ class StockInController extends Controller
                 'price' => (float) $p->price,
                 'cost_price' => (float) $p->cost_price,
                 'track_expiry' => (bool) $p->track_expiry,
+                'decimal' => UnitConverter::allowsDecimal($p->base_unit),
                 'units' => $p->units->map(fn ($u) => [
                     'id' => $u->id, 'name' => $u->name, 'conversion' => (float) $u->conversion,
                 ])->values()->all(),
@@ -344,6 +345,13 @@ class StockInController extends Controller
 
             $conversion = (float) ($unit?->conversion ?? 1);
             $qty = round((float) $item['quantity'], 3);
+
+            // rokok, botol, dus... tidak bisa pecahan; hanya KG / LITER / METER dst.
+            if (! UnitConverter::allowsDecimal($product->base_unit) && abs($qty - round($qty)) > 0.0001) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "items.$i.quantity" => "Jumlah {$product->name} harus bilangan bulat (tertulis {$qty} " . ($unit?->name ?? $product->base_unit) . ').',
+                ]);
+            }
             $cost = round((float) $item['cost_price'], 2);
 
             $line = StockInItem::create([

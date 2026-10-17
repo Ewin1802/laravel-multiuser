@@ -7,6 +7,14 @@ namespace App\Support;
  */
 class UnitConverter
 {
+    /** Satuan ukuran yang boleh desimal (1,5 KG, 0,25 LITER). Selain ini (PCS, BUNGKUS, SLOP, DUS...) harus bulat. */
+    public const MEASURE_UNITS = ['KG', 'KILO', 'GR', 'GRAM', 'ONS', 'LITER', 'LTR', 'L', 'ML', 'METER', 'M', 'CM'];
+
+    public static function allowsDecimal(?string $baseUnit): bool
+    {
+        return in_array(strtoupper(trim((string) $baseUnit)), self::MEASURE_UNITS, true);
+    }
+
     /**
      * Uraikan jumlah satuan terkecil ke satuan-satuan produk, dari terbesar.
      *

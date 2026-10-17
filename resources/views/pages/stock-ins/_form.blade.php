@@ -333,8 +333,10 @@
                         </label>
                         <label class="p-line-field is-qty">
                             <span>Jumlah</span>
-                            <input type="number" name="items[${key}][quantity]" data-qty min="0.001" step="0.001"
-                                inputmode="decimal" required value="${esc(qty)}" placeholder="0">
+                            <input type="number" name="items[${key}][quantity]" data-qty
+                                min="${p.decimal ? '0.001' : '1'}" step="${p.decimal ? '0.001' : '1'}"
+                                inputmode="${p.decimal ? 'decimal' : 'numeric'}" required value="${esc(qty)}" placeholder="0"
+                                title="${p.decimal ? 'Boleh desimal, mis. 1,5' : 'Bilangan bulat (tanpa koma)'}">
                             <small class="p-hint" data-base></small>
                         </label>
                         <label class="p-line-field is-cost">
@@ -371,6 +373,13 @@
                     updateRow(row);
                     return row;
                 };
+
+                // scroll mouse di atas kolom jumlah tidak boleh mengubah angkanya
+                lines.addEventListener('wheel', (e) => {
+                    if (e.target.matches('input[type="number"]') && document.activeElement === e.target) {
+                        e.target.blur();
+                    }
+                }, { passive: true });
 
                 const updateRow = (row) => {
                     const pid = Number(row.dataset.pid);
