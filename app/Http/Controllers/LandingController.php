@@ -18,4 +18,12 @@ class LandingController extends Controller
             'plans' => Plan::where('is_active', true)->orderBy('duration_months')->get(),
         ]);
     }
+
+    /** Kebijakan privasi publik (dipakai juga untuk Google Play Console). */
+    public function privacy()
+    {
+        return view('privacy', [
+            'setting' => Setting::first() ?? new Setting(),
+        ]);
+    }
 }

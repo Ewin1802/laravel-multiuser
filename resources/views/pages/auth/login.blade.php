@@ -195,6 +195,8 @@
                     <span>© {{ date('Y') }} {{ $storeName }}</span>
                     <i></i>
                     <a href="{{ url('/') }}">Kembali ke beranda</a>
+                    <i></i>
+                    <a href="{{ route('privacy') }}">Privasi</a>
                 </footer>
             </div>
         </section>

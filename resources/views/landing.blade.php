@@ -1387,6 +1387,10 @@
         <div class="wrap">
             <span>{{ $s->copyright ?: '© ' . date('Y') . ' ' . $appName }}</span>
             <span>
+                <a href="{{ route('privacy') }}">Kebijakan Privasi</a>
+                @if ($s->phone || $s->email)
+                    &nbsp;|&nbsp;
+                @endif
                 @if ($s->phone)
                     {{ $s->phone }}
                 @endif
