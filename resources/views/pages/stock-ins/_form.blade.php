@@ -310,10 +310,10 @@
                     const raw = cost === '' || cost === null ? '' : String(Math.round(Number(cost)));
 
                     const base = esc(p.base_unit || 'PCS');
-                    const unitOptions = units.map((u) => `<option value="${u.id ?? ''}" data-conv="${u.conversion}" ${u === selUnit ? 'selected' : ''}>${esc(u.name)}${Number(u.conversion) > 1 ? ` (isi ${num(u.conversion)} ${base})` : ''}</option>`).join('');
+                    const unitOptions = units.map((u) => `<option value="${u.id ?? ''}" data-conv="${u.conversion}" ${u === selUnit ? 'selected' : ''}>${esc(u.name)}</option>`).join('');
 
                     const row = document.createElement('div');
-                    row.className = 'p-line';
+                    row.className = 'p-line' + (p.track_expiry ? ' has-exp' : '');
                     row.dataset.line = key;
                     row.dataset.pid = pid;
                     row.innerHTML = `
@@ -323,20 +323,21 @@
                             <small>Stok sekarang ${esc(p.stock_text || (num(p.stock) + ' ' + base))} · Harga jual ${rp(p.price)} / ${base}</small>
                             <small class="p-line-hint" data-hint></small>
                         </div>
-                        <label class="p-line-field">
+                        <label class="p-line-field is-unit">
                             <span>Satuan</span>
                             <select name="items[${key}][product_unit_id]" data-unit>${unitOptions}</select>
+                            <small class="p-hint" data-conv-hint></small>
                             ${units.length <= 1 ? `<small class="p-hint p-unit-missing">Hanya ${base}. Beli per SLOP / DUS?
                                 <a href="${EDIT_URL.replace('__ID__', pid)}" target="_blank" rel="noopener" class="p-link">Tambah satuan di produk</a>,
                                 lalu muat ulang halaman ini.</small>` : ''}
                         </label>
-                        <label class="p-line-field">
+                        <label class="p-line-field is-qty">
                             <span>Jumlah</span>
                             <input type="number" name="items[${key}][quantity]" data-qty min="0.001" step="0.001"
                                 inputmode="decimal" required value="${esc(qty)}" placeholder="0">
                             <small class="p-hint" data-base></small>
                         </label>
-                        <label class="p-line-field">
+                        <label class="p-line-field is-cost">
                             <span>Harga beli / <em data-unit-name>${esc(selUnit.name)}</em></span>
                             <span class="p-affix">
                                 <span class="is-prefix">Rp</span>
@@ -347,11 +348,11 @@
                             <input type="hidden" name="items[${key}][cost_price]" data-cost-raw value="${raw}">
                         </label>
                         ${p.track_expiry ? `
-                        <label class="p-line-field">
+                        <label class="p-line-field is-exp">
                             <span>Tanggal expire <span class="req">*</span></span>
                             <input type="date" name="items[${key}][expiry_date]" required value="${esc(expiry || '')}">
                         </label>
-                        <label class="p-line-field">
+                        <label class="p-line-field is-batch">
                             <span>No. batch</span>
                             <input type="text" name="items[${key}][batch_code]" maxlength="50" placeholder="Opsional" value="${esc(batchCode || '')}">
                         </label>` : ''}
@@ -383,6 +384,8 @@
 
                     row.querySelector('[data-unit-name]').textContent = unitName;
                     row.querySelector('[data-sub]').textContent = rp(qty * cost);
+                    const convHint = row.querySelector('[data-conv-hint]');
+                    if (convHint) convHint.textContent = conv > 1 ? `isi ${num(conv)} ${p.base_unit || 'PCS'}` : 'satuan terkecil';
                     row.querySelector('[data-base]').textContent = conv > 1 && qty
                         ? `= ${num(qty * conv)} ${p.base_unit || 'PCS'}` : '';
 
