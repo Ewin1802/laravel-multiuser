@@ -85,6 +85,14 @@ class ExpiryController extends Controller
 
         $product = Product::findOrFail($data['product_id']);
 
+        // BUNGKUS, BOTOL, PCS... tidak bisa pecahan; hanya KG / LITER / METER dst.
+        if (! \App\Support\UnitConverter::allowsDecimal($product->base_unit)
+            && abs((float) $data['quantity'] - round((float) $data['quantity'])) > 0.0001) {
+            return back()->withInput()->withErrors([
+                'quantity' => "Jumlah {$product->name} harus bilangan bulat ({$product->base_unit}).",
+            ]);
+        }
+
         DB::transaction(function () use ($product, $data) {
             $qty = round((float) $data['quantity'], 3);
 

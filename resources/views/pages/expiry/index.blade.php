@@ -191,39 +191,76 @@
                             <p>Jumlah dalam satuan terkecil. Produk ber-expire dipotong dari batch terdekat.</p>
                         </div>
                     </div>
-                    <form method="POST" action="{{ route('expiry.store') }}">
+                    <form method="POST" action="{{ route('expiry.store') }}" class="s-wo-form" id="writeOffForm">
                         @csrf
                         <div class="p-field">
                             <label for="wo_product">Produk</label>
                             <select id="wo_product" name="product_id" required>
                                 <option value="">Pilih produk</option>
                                 @foreach ($products as $p)
-                                    <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->base_unit }})
-                                    </option>
+                                    <option value="{{ $p->id }}" data-unit="{{ $p->base_unit }}"
+                                        data-dec="{{ \App\Support\UnitConverter::allowsDecimal($p->base_unit) ? 1 : 0 }}"
+                                        @selected(old('product_id') == $p->id)>{{ $p->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="p-field">
                             <label for="wo_qty">Jumlah</label>
-                            <input type="number" id="wo_qty" name="quantity" min="0.001" step="any" required
-                                inputmode="decimal">
+                            <div class="p-affix">
+                                <input type="number" id="wo_qty" name="quantity" class="has-suffix s-wo-qty"
+                                    min="1" step="1" required inputmode="numeric" placeholder="0"
+                                    value="{{ old('quantity') }}">
+                                <span class="is-suffix" id="wo_unit">PCS</span>
+                            </div>
+                            <small class="p-hint" id="wo_hint">Pilih produk dulu.</small>
+                            @error('quantity')
+                                <small class="p-error">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="p-field">
-                            <label for="wo_reason">Alasan</label>
-                            <select id="wo_reason" name="reason" required>
+                            <label>Alasan</label>
+                            <div class="s-wo-reasons">
                                 @foreach ($reasons as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
+                                    <label class="s-wo-reason">
+                                        <input type="radio" name="reason" value="{{ $value }}" required
+                                            @checked(old('reason', array_key_first($reasons)) === $value)>
+                                        <span>{{ $label }}</span>
+                                    </label>
                                 @endforeach
-                            </select>
+                            </div>
                         </div>
                         <div class="p-field">
                             <label for="wo_note">Catatan</label>
-                            <input type="text" id="wo_note" name="note" maxlength="255" placeholder="Opsional">
+                            <input type="text" id="wo_note" name="note" maxlength="255" placeholder="Opsional, mis. kemasan bocor"
+                                value="{{ old('note') }}">
                         </div>
-                        <div class="p-form-actions">
-                            <button type="submit" class="p-btn p-btn-primary"><i data-lucide="save"></i> Simpan</button>
-                        </div>
+                        <button type="submit" class="p-btn p-btn-primary s-wo-submit">
+                            <i data-lucide="save"></i> Simpan barang keluar
+                        </button>
                     </form>
+                    <script>
+                        (() => {
+                            const sel = document.getElementById('wo_product');
+                            const qty = document.getElementById('wo_qty');
+                            const unit = document.getElementById('wo_unit');
+                            const hint = document.getElementById('wo_hint');
+                            const sync = () => {
+                                const o = sel.selectedOptions[0];
+                                const dec = o?.dataset.dec === '1';
+                                unit.textContent = o?.dataset.unit || 'PCS';
+                                qty.step = dec ? '0.001' : '1';
+                                qty.min = dec ? '0.001' : '1';
+                                qty.inputMode = dec ? 'decimal' : 'numeric';
+                                hint.textContent = !o?.value ? 'Pilih produk dulu.'
+                                    : dec ? `Dalam ${o.dataset.unit}, boleh desimal (mis. 1,5).`
+                                    : `Dalam ${o.dataset.unit} (satuan terkecil), bilangan bulat.`;
+                            };
+                            sel.addEventListener('change', sync);
+                            // scroll mouse tidak mengubah angka
+                            qty.addEventListener('wheel', () => document.activeElement === qty && qty.blur(), { passive: true });
+                            sync();
+                        })();
+                    </script>
                 </section>
             </aside>
         </div>

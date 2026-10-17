@@ -3680,3 +3680,75 @@ button.p-chip {
     -webkit-appearance: none;
     margin: 0;
 }
+
+/* ---------- Expire: form catat barang keluar ---------- */
+.s-wo-form {
+    display: grid;
+    gap: 16px;
+    margin-top: 6px;
+}
+.s-wo-form .p-hint { font-size: 11.5px; }
+.crud-page .s-wo-form .s-wo-qty {
+    font-size: 18px;
+    font-weight: 700;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+.s-wo-form .s-wo-qty::-webkit-inner-spin-button,
+.s-wo-form .s-wo-qty::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.s-wo-form .p-affix > span.is-suffix {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    color: var(--pm);
+}
+.crud-page .s-wo-form .p-affix input.has-suffix { padding-right: 84px; }
+.s-wo-reasons {
+    display: grid;
+    gap: 8px;
+}
+.s-wo-reason {
+    position: relative;
+    display: block;
+    cursor: pointer;
+}
+.s-wo-reason input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.s-wo-reason span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--pl);
+    border-radius: 12px;
+    background: #fff;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: border-color .15s ease, background .15s ease;
+}
+.s-wo-reason span::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border: 2px solid #cbd0d8;
+    border-radius: 50%;
+    transition: border .15s ease;
+}
+.s-wo-reason:hover span { border-color: #d9dde3; }
+.s-wo-reason input:checked + span {
+    border-color: #ff6a1a;
+    background: #fff4ec;
+}
+.s-wo-reason input:checked + span::before {
+    border: 5px solid #ff6a1a;
+}
+.s-wo-reason input:focus-visible + span { outline: 2px solid #ff6a1a; outline-offset: 2px; }
+.s-wo-submit {
+    width: 100%;
+    justify-content: center;
+    min-height: 46px;
+}
