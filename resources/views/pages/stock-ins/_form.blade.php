@@ -141,7 +141,7 @@
                 <span class="p-section-icon"><i data-lucide="package-plus"></i></span>
                 <div>
                     <h3>Barang Masuk</h3>
-                    <p>Cari produk, pilih satuan (mis. SLOP / BUNGKUS), lalu isi jumlah dan harga beli per satuan itu. Produk ber-expire wajib diisi tanggal expire.
+                    <p>Cari produk, pilih satuan (mis. SLOP / BUNGKUS), lalu isi jumlah dan harga beli per satuan itu. Beli campuran (mis. 3 SLOP + 3 BUNGKUS)? Cari produknya sekali lagi → baris kedua otomatis memakai satuan lain. Produk ber-expire wajib diisi tanggal expire.
                         <button type="button" class="s-guide-link" data-guide-open="stockInGuide" data-guide-tab="satuan">Cara isi satuan</button>
                         ·
                         <button type="button" class="s-guide-link" data-guide-open="stockInGuide" data-guide-tab="expire">Cara isi expire</button></p>
@@ -279,18 +279,27 @@
                     const p = byId.get(pid);
                     if (!p) return;
 
-                    // produk tanpa expire: satu baris cukup. Produk ber-expire boleh
-                    // beberapa baris (tanggal expire berbeda).
-                    const existing = lines.querySelector(`[data-pid="${pid}"]`);
-                    if (existing && !p.track_expiry && cost === null) {
-                        existing.querySelector('[data-qty]').focus();
-                        existing.classList.add('is-flash');
-                        setTimeout(() => existing.classList.remove('is-flash'), 700);
-                        return;
+                    const units = unitsOf(p);
+
+                    // Produk yang sama boleh beberapa baris bila SATUANNYA berbeda
+                    // (mis. 3 SLOP + 3 BUNGKUS dalam satu nota) atau bila ber-expire
+                    // (tanggal expire berbeda). Baris baru otomatis memakai satuan
+                    // yang belum dipakai. Kalau semua satuan sudah ada → sorot baris lama.
+                    const existingRows = [...lines.querySelectorAll(`[data-pid="${pid}"]`)];
+                    if (existingRows.length && cost === null && !p.track_expiry) {
+                        const used = new Set(existingRows.map((r) => r.querySelector('[data-unit]').value));
+                        const free = units.find((u) => !used.has(String(u.id ?? '')));
+                        if (!free) {
+                            const last = existingRows[existingRows.length - 1];
+                            last.querySelector('[data-qty]').focus();
+                            last.classList.add('is-flash');
+                            setTimeout(() => last.classList.remove('is-flash'), 700);
+                            return;
+                        }
+                        unitId = free.id ?? '';
                     }
 
                     const key = seq++;
-                    const units = unitsOf(p);
                     const selUnit = units.find((u) => String(u.id) === String(unitId)) || units[0];
 
                     const auto = cost === null || cost === '';

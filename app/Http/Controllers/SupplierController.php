@@ -12,21 +12,29 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
+        // Ringkasan pembelian per supplier dihitung di subquery, lalu di-join.
+        // (Tidak memakai suppliers.* + GROUP BY: MySQL/MariaDB mode ketat
+        // menolak kolom yang tidak ada di GROUP BY → server error.)
+        $stats = Tenant::table('stock_ins')
+            ->select(
+                'supplier_id',
+                DB::raw('COUNT(*) as stock_ins_count'),
+                DB::raw('COALESCE(SUM(total), 0) as purchases_total'),
+                DB::raw('MAX(received_at) as last_received_at')
+            )
+            ->groupBy('supplier_id');
+
         $suppliers = Tenant::table('suppliers')
-            ->leftJoin('stock_ins', 'stock_ins.supplier_id', '=', 'suppliers.id')
+            ->leftJoinSub($stats, 'si', 'si.supplier_id', '=', 'suppliers.id')
             ->select(
                 'suppliers.*',
-                DB::raw('COUNT(stock_ins.id) as stock_ins_count'),
-                DB::raw('COALESCE(SUM(stock_ins.total), 0) as purchases_total'),
-                DB::raw('MAX(stock_ins.received_at) as last_received_at')
+                DB::raw('COALESCE(si.stock_ins_count, 0) as stock_ins_count'),
+                DB::raw('COALESCE(si.purchases_total, 0) as purchases_total'),
+                'si.last_received_at'
             )
             ->when($request->name, function ($query, $name) {
                 $query->where('suppliers.name', 'like', "%{$name}%");
             })
-            ->groupBy(
-                'suppliers.id', 'suppliers.name', 'suppliers.phone', 'suppliers.address',
-                'suppliers.notes', 'suppliers.is_active', 'suppliers.created_at', 'suppliers.updated_at'
-            )
             ->orderBy('suppliers.name')
             ->paginate(15)
             ->withQueryString();
