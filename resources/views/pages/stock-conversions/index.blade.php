@@ -51,15 +51,8 @@
             </div>
         </div>
 
-        <div class="p-notice is-info s-cv-hint" role="note">
-            <i data-lucide="lightbulb"></i>
-            <div>
-                <strong>Rokok, air mineral, mi instan?</strong>
-                <span>Barang dengan isi kemasan tetap lebih mudah diatur sebagai <b>satuan jual</b> di produknya
-                    (mis. SLOP / BUNGKUS / BATANG) — tidak perlu dibuka di sini.
-                    <button type="button" class="s-guide-link" data-guide-open="conversionGuide" data-guide-tab="cara">Bandingkan caranya</button></span>
-            </div>
-        </div>
+        {{-- aturan kunci + contoh bisa / tidak perlu --}}
+        @include('pages.stock-conversions._rule')
 
         @if ($errors->any())
             <div class="p-notice is-danger" role="alert">

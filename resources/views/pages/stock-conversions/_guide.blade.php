@@ -35,6 +35,8 @@
             <div class="p-modal-body s-guide-body">
                 {{-- TAB 1: PILIH CARA --}}
                 <div class="s-guide-pane is-active" data-guide-pane="cara">
+                    @include('pages.stock-conversions._rule')
+
                     <div class="s-choice">
                         <div class="s-choice-card is-recommended">
                             <span class="s-choice-tag">Disarankan</span>
