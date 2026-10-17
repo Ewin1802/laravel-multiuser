@@ -31,6 +31,11 @@ use Illuminate\Support\Facades\Route;
 // Halaman depan aplikasi (menawarkan aplikasi kasir ke toko baru)
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
+// Kebijakan privasi (URL ini diisi di Google Play Console)
+Route::get('/kebijakan-privasi', [LandingController::class, 'privacy'])->name('privacy');
+Route::redirect('/privacy', '/kebijakan-privasi', 301);
+Route::redirect('/hapus-akun', '/kebijakan-privasi#hapus-akun', 302);
+
 Route::middleware('auth')->group(function () {
 
     // Arah setelah login, tergantung role
