@@ -36,7 +36,9 @@
                     </form>
                 @else
                     <form method="POST" action="{{ route('superadmin.stores.suspend', $store) }}"
-                        data-confirm="Blokir {{ $store->name }}? Toko menjadi hanya-lihat.">
+                        data-confirm="Blokir {{ $store->name }}? Toko menjadi hanya-lihat: kasir tidak bisa membuat transaksi baru sampai blokir dibuka."
+                        data-confirm-input="reason" data-confirm-input-label="Alasan blokir (terlihat oleh pemilik toko)"
+                        data-confirm-input-placeholder="Opsional, mis. pembayaran belum diterima">
                         @csrf
                         <input type="hidden" name="reason" value="">
                         <button class="p-btn p-btn-ghost" type="submit"><i data-lucide="ban"></i> Blokir</button>

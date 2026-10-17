@@ -552,3 +552,144 @@
 
 /* Penanda toko cafe (draft order aktif) */
 .tone-cafe { --tone: #9a3412; --tone-soft: #fff1e6; }
+
+/* ==========================================================================
+   Dialog konfirmasi premium (window.appConfirm / form[data-confirm])
+   ========================================================================== */
+.acx {
+    position: fixed;
+    inset: 0;
+    z-index: 4000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    --acx: #ff6a1a;
+    --acx2: #ffae1f;
+    --acx-soft: rgba(255, 106, 26, .28);
+}
+.acx[hidden] { display: none; }
+.acx[data-tone="danger"]  { --acx: #ef4444; --acx2: #f97316; --acx-soft: rgba(239, 68, 68, .3); }
+.acx[data-tone="success"] { --acx: #16a34a; --acx2: #4ade80; --acx-soft: rgba(34, 197, 94, .28); }
+
+.acx-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 10, 13, .6);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity .18s ease;
+}
+.acx *, .acx *::before, .acx *::after { box-sizing: border-box; }
+.acx-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 40px 90px rgba(0, 0, 0, .35);
+    opacity: 0;
+    transform: translateY(16px) scale(.96);
+    transition: opacity .2s ease, transform .24s cubic-bezier(.2, .9, .3, 1.15);
+}
+.acx.is-open .acx-backdrop { opacity: 1; }
+.acx.is-open .acx-dialog { opacity: 1; transform: none; }
+
+.acx-head {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 22px 24px 20px;
+    color: #fff;
+    background: radial-gradient(120% 160% at 100% 0%, var(--acx-soft), transparent 58%),
+        linear-gradient(135deg, #0c0e11, #1b1f26);
+}
+.acx-icon {
+    flex: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--acx), var(--acx2));
+    box-shadow: 0 10px 24px var(--acx-soft);
+}
+.acx-icon svg { width: 24px; height: 24px; color: #fff; }
+.acx-head-text { min-width: 0; }
+.acx-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--acx2);
+}
+.acx-head h3 {
+    margin: 3px 0 0;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: #fff;
+    overflow-wrap: anywhere;
+}
+.acx-body { padding: 20px 24px 4px; }
+.acx-body p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14.5px;
+    line-height: 1.6;
+}
+.acx-input {
+    display: grid;
+    gap: 6px;
+    margin-top: 14px;
+}
+.acx-input[hidden] { display: none; }
+.acx-input span { font-size: 12.5px; font-weight: 700; color: #374151; }
+.acx-input textarea {
+    box-sizing: border-box;
+    width: 100%;
+    resize: vertical;
+    min-height: 64px;
+    padding: 10px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+}
+.acx-input textarea:focus { border-color: var(--acx); box-shadow: 0 0 0 4px var(--acx-soft); }
+
+.acx-foot {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 20px 24px 22px;
+}
+.acx-btn {
+    height: 46px;
+    padding: 0 20px;
+    border-radius: 14px;
+    font: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.acx-btn.is-ghost { background: #fff; border-color: #e5e7eb; color: #0c0e11; }
+.acx-btn.is-ghost:hover { background: #f4f5f7; }
+.acx-btn.is-ok {
+    min-width: 128px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--acx), color-mix(in srgb, var(--acx) 70%, #000));
+    box-shadow: 0 10px 22px var(--acx-soft);
+}
+.acx-btn.is-ok:hover { transform: translateY(-1px); }
+.acx-btn:focus-visible { outline: 3px solid var(--acx-soft); outline-offset: 2px; }
+
+@media (max-width: 560px) {
+    .acx { align-items: end; padding: 0; }
+    .acx-dialog { max-width: none; border-radius: 24px 24px 0 0; }
+    .acx-foot { flex-direction: column-reverse; }
+    .acx-btn { width: 100%; }
+}

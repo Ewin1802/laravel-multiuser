@@ -398,18 +398,144 @@
         });
     });
 
-    // konfirmasi hapus: <form data-confirm="Hapus produk X?">
-    document.addEventListener('submit', (e) => {
+    /* ======================================================
+       DIALOG KONFIRMASI PREMIUM (pengganti confirm() bawaan)
+
+       <form data-confirm="Hapus produk X? Tindakan ini tidak bisa dibatalkan.">
+         opsional:
+           data-confirm-ok="Ya, hapus"          label tombol
+           data-confirm-tone="danger|success|primary"
+           data-confirm-input="reason"          tampilkan kolom isian → diisi ke
+           data-confirm-input-label="Alasan"    <input name="reason"> di form itu
+
+       Dari JS: const ok = await window.appConfirm({ message: '...', tone: 'danger' });
+    ====================================================== */
+    const CONFIRM_RULES = [
+        [/^(hapus|blokir|lepas|tolak|batalkan|nonaktifkan|keluarkan)\b/i, 'danger', 'trash-2'],
+        [/^(setujui|konfirmasi|tandai|aktifkan)\b/i, 'success', 'circle-check'],
+        [/.*/, 'primary', 'circle-help'],
+    ];
+    const ICONS = { danger: 'triangle-alert', success: 'circle-check', primary: 'circle-help' };
+
+    const escapeHtml = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    let confirmEl = null;
+    const buildConfirm = () => {
+        confirmEl = document.createElement('div');
+        confirmEl.className = 'acx';
+        confirmEl.hidden = true;
+        confirmEl.innerHTML = `
+            <div class="acx-backdrop" data-acx-cancel></div>
+            <div class="acx-dialog" role="alertdialog" aria-modal="true" aria-labelledby="acxTitle" aria-describedby="acxText">
+                <div class="acx-head">
+                    <span class="acx-icon"><i data-lucide="circle-help"></i></span>
+                    <div class="acx-head-text">
+                        <span class="acx-eyebrow" id="acxEyebrow">Konfirmasi</span>
+                        <h3 id="acxTitle"></h3>
+                    </div>
+                </div>
+                <div class="acx-body">
+                    <p id="acxText"></p>
+                    <label class="acx-input" hidden>
+                        <span id="acxInputLabel"></span>
+                        <textarea rows="2" maxlength="255"></textarea>
+                    </label>
+                </div>
+                <div class="acx-foot">
+                    <button type="button" class="acx-btn is-ghost" data-acx-cancel>Batal</button>
+                    <button type="button" class="acx-btn is-ok" id="acxOk">OK</button>
+                </div>
+            </div>`;
+        document.body.appendChild(confirmEl);
+    };
+
+    window.appConfirm = ({ message = 'Lanjutkan?', title = null, okText = null, tone = null, input = null } = {}) => new Promise((resolve) => {
+        if (!confirmEl) buildConfirm();
+
+        // "Blokir Toko X? Toko menjadi hanya-lihat."  → judul + keterangan
+        const text = String(message).trim();
+        const cut = text.search(/[?!]\s/);
+        const head = title ?? (cut > -1 ? text.slice(0, cut + 1) : text);
+        const rest = title ? text : (cut > -1 ? text.slice(cut + 1).trim() : '');
+
+        const rule = CONFIRM_RULES.find(([re]) => re.test(head));
+        const t = tone || rule[1];
+        const verb = (head.match(/^\S+/) || ['OK'])[0].replace(/[?!.,]/g, '');
+
+        confirmEl.dataset.tone = t;
+        confirmEl.querySelector('.acx-icon').innerHTML = `<i data-lucide="${t === 'danger' ? rule[2] : ICONS[t]}"></i>`;
+        confirmEl.querySelector('#acxEyebrow').textContent = t === 'danger' ? 'Perlu konfirmasi' : 'Konfirmasi';
+        confirmEl.querySelector('#acxTitle').textContent = head;
+        const p = confirmEl.querySelector('#acxText');
+        p.textContent = rest;
+        p.hidden = !rest;
+
+        const box = confirmEl.querySelector('.acx-input');
+        const area = box.querySelector('textarea');
+        box.hidden = !input;
+        area.value = input?.value || '';
+        area.placeholder = input?.placeholder || '';
+        confirmEl.querySelector('#acxInputLabel').textContent = input?.label || '';
+
+        const ok = confirmEl.querySelector('#acxOk');
+        ok.innerHTML = escapeHtml(okText || (t === 'primary' ? 'Ya, lanjutkan' : 'Ya, ' + verb.toLowerCase()));
+
+        const prevFocus = document.activeElement;
+        const close = (result) => {
+            confirmEl.classList.remove('is-open');
+            document.removeEventListener('keydown', onKey, true);
+            setTimeout(() => { confirmEl.hidden = true; }, 160);
+            document.body.style.overflow = '';
+            prevFocus?.focus?.();
+            resolve(result ? { value: area.value.trim() } : false);
+        };
+        const onKey = (e) => {
+            if (e.key === 'Escape') { e.preventDefault(); close(false); }
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); close(true); }
+        };
+
+        confirmEl.querySelectorAll('[data-acx-cancel]').forEach((el) => { el.onclick = () => close(false); });
+        ok.onclick = () => close(true);
+        document.addEventListener('keydown', onKey, true);
+
+        confirmEl.hidden = false;
+        document.body.style.overflow = 'hidden';
+        window.refreshIcons?.();
+        requestAnimationFrame(() => {
+            confirmEl.classList.add('is-open');
+            (input ? area : ok).focus();
+        });
+    });
+
+    // <form data-confirm="..."> → dialog premium, lalu kirim
+    document.addEventListener('submit', async (e) => {
         const form = e.target.closest('form[data-confirm]');
         if (!form) return;
 
-        if (!confirm(form.dataset.confirm)) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-        } else {
+        if (form.dataset.confirmed === '1') {
+            delete form.dataset.confirmed;
             window.showLoading();
+            return;
         }
-    });
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        const d = form.dataset;
+        const field = d.confirmInput ? form.querySelector(`[name="${d.confirmInput}"]`) : null;
+        const res = await window.appConfirm({
+            message: d.confirm,
+            okText: d.confirmOk,
+            tone: d.confirmTone,
+            input: field ? { label: d.confirmInputLabel || 'Catatan', placeholder: d.confirmInputPlaceholder || 'Opsional', value: field.value } : null,
+        });
+        if (!res) return;
+
+        if (field) field.value = res.value;
+        form.dataset.confirmed = '1';
+        const submitter = e.submitter && form.contains(e.submitter) ? e.submitter : undefined;
+        form.requestSubmit ? form.requestSubmit(submitter) : form.submit();
+    }, true);
 
     /* ======================================================
        INIT

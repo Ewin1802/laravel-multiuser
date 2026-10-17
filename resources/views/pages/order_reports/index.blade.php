@@ -495,18 +495,23 @@
                 /* ======================================================
                    KONFIRMASI HAPUS (event delegation, satu listener)
                 ====================================================== */
-                document.addEventListener('submit', (e) => {
+                document.addEventListener('submit', async (e) => {
                     const form = e.target.closest('.delete-order-form');
                     if (!form) return;
+                    if (form.dataset.confirmed === '1') {
+                        delete form.dataset.confirmed;
+                        window.showLoading?.();
+                        return;
+                    }
+                    e.preventDefault();
 
-                    const ok = confirm(
-                        'Hapus ' + (form.dataset.invoice || 'transaksi ini') + '?\n\n' +
-                        'Stok produk akan dikembalikan otomatis. ' +
-                        'Tindakan ini TIDAK BISA dibatalkan.'
-                    );
-
-                    if (!ok) e.preventDefault();
-                    else window.showLoading?.();
+                    const ok = await window.appConfirm({
+                        message: 'Hapus ' + (form.dataset.invoice || 'transaksi ini') + '? ' +
+                            'Stok produk akan dikembalikan otomatis. Tindakan ini tidak bisa dibatalkan.',
+                    });
+                    if (!ok) return;
+                    form.dataset.confirmed = '1';
+                    form.requestSubmit();
                 });
 
                 /* ======================================================
