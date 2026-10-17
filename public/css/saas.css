@@ -549,3 +549,6 @@
 .s-when b { font-weight: 600; }
 .s-when span { font-size: .82em; color: var(--muted, #667080); font-variant-numeric: tabular-nums; }
 .s-when.is-off b { color: #dc2626; }
+
+/* Penanda toko cafe (draft order aktif) */
+.tone-cafe { --tone: #9a3412; --tone-soft: #fff1e6; }

@@ -29,8 +29,11 @@ class StoreController extends Controller
     {
         $q = trim((string) $request->input('q'));
         $state = $request->input('state');
+        $mode = $request->input('mode'); // cafe | retail
 
         $stores = Store::with('owner')
+            ->when($mode === 'cafe', fn ($query) => $query->where('feature_draft_order', true))
+            ->when($mode === 'retail', fn ($query) => $query->where(fn ($w) => $w->where('feature_draft_order', false)->orWhereNull('feature_draft_order')))
             ->when($q, fn ($query) => $query->where(function ($w) use ($q) {
                 $w->where('name', 'like', "%$q%")
                     ->orWhereHas('users', fn ($u) => $u->where('email', 'like', "%$q%")->orWhere('phone_number', 'like', "%$q%"));
@@ -40,7 +43,7 @@ class StoreController extends Controller
             ->when($state, fn ($c) => $c->filter(fn (Store $s) => $s->subscription()->state() === $state))
             ->values();
 
-        return view('pages.superadmin.stores.index', compact('stores', 'q', 'state'));
+        return view('pages.superadmin.stores.index', compact('stores', 'q', 'state', 'mode'));
     }
 
     public function show(Store $store)

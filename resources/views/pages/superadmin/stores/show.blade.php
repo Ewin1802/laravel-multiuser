@@ -15,7 +15,11 @@
         <div class="p-header">
             <div>
                 <a href="{{ route('superadmin.stores.index') }}" class="p-back"><i data-lucide="arrow-left"></i> Semua toko</a>
-                <h1>{{ $store->name }} @include('pages.superadmin._state', ['state' => $state])</h1>
+                <h1>{{ $store->name }} @include('pages.superadmin._state', ['state' => $state])
+                    @if ($store->feature_draft_order)
+                        <span class="s-badge tone-cafe" title="Draft order (cafe) diaktifkan pemilik toko"><i data-lucide="coffee"></i> Cafe · draft order</span>
+                    @endif
+                </h1>
                 <p>{{ $store->owner->name ?? '-' }} · {{ $store->owner->email ?? '' }} · {{ $store->owner->phone_number ?? '' }}</p>
             </div>
             <div class="s-actions-row">
