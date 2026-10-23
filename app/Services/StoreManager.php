@@ -25,7 +25,7 @@ class StoreManager
      */
     public function register(array $data, ?string $deviceId = null): User
     {
-        return DB::transaction(function () use ($data, $deviceId) {
+        $user = DB::transaction(function () use ($data, $deviceId) {
             $store = new Store([
                 'name' => $data['store_name'],
                 'phone' => $data['phone_number'],
@@ -48,6 +48,31 @@ class StoreManager
 
             return $user;
         });
+
+        $this->notifyNewRegistration($user->store_id, $data['store_name']);
+
+        return $user;
+    }
+
+    /**
+     * Push ke APLIKASI ADMIN bahwa ada toko baru menunggu persetujuan.
+     * Dikirim SETELAH respons terkirim, jadi pendaftar tidak menunggu
+     * dan pendaftaran tetap berhasil walau FCM bermasalah.
+     * Isi notif sengaja tanpa email / nomor HP pendaftar.
+     */
+    private function notifyNewRegistration(int $storeId, string $storeName): void
+    {
+        $pending = Store::where('status', Store::STATUS_PENDING)->count();
+
+        dispatch(function () use ($storeId, $storeName, $pending) {
+            app(FcmService::class)->notifyAdmins(
+                'Pendaftar baru: ' . $storeName,
+                $pending > 1
+                    ? "Ada {$pending} toko menunggu persetujuan. Ketuk untuk meninjau."
+                    : 'Toko ini menunggu persetujuan. Ketuk untuk meninjau.',
+                ['type' => 'new_store', 'store_id' => $storeId, 'pending' => $pending]
+            );
+        })->afterResponse();
     }
 
     /**

@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         $router->aliasMiddleware('store.writable', EnsureStoreWritable::class);
         $router->aliasMiddleware('api.store', EnsureApiStore::class);
         $router->aliasMiddleware('device', ResolveDevice::class);
+        $router->aliasMiddleware('api.admin', \App\Http\Middleware\EnsureAdminApp::class);
 
         if ($this->app->runningInConsole()) {
             $this->commands([LicenseKeygen::class]);

@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    /*
+    | Firebase Cloud Messaging — push notification ke aplikasi kasir &
+    | aplikasi admin (satu project Firebase).
+    | FIREBASE_CREDENTIALS = path file service account JSON (RAHASIA,
+    | jangan di folder public, jangan masuk git).
+    */
+    'fcm' => [
+        'credentials' => env('FIREBASE_CREDENTIALS', storage_path('app/private/firebase-service-account.json')),
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+    ],
+
 ];

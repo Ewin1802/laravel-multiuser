@@ -4,7 +4,7 @@
     $owner = $s->store_name ?: config('app.name', 'My Cashier');
     $email = $s->email ?: config('mail.from.address');
     $wa = $s->whatsapp ? preg_replace('/\D/', '', preg_replace('/^0/', '62', $s->whatsapp)) : null;
-    $updated = '17 Oktober 2026';
+    $updated = '23 Oktober 2026';
 
     $toc = [
         'ringkasan' => 'Ringkasan',
@@ -293,6 +293,7 @@
                         <thead><tr><th>Jenis data</th><th>Contoh</th><th>Kegunaan</th></tr></thead>
                         <tbody>
                             <tr><td>Info perangkat</td><td>ID perangkat aplikasi, merek &amp; model HP, versi Android, versi aplikasi</td><td>Membatasi satu HP kasir aktif per toko dan memverifikasi lisensi</td></tr>
+                            <tr><td>Token notifikasi</td><td>Token Firebase Cloud Messaging dari HP yang login</td><td>Mengirim pengumuman layanan (mis. jadwal pemeliharaan, pembaruan aplikasi)</td></tr>
                             <tr><td>Jam &amp; tanggal HP</td><td>Selisih jam HP dengan jam server saat sinkronisasi</td><td>Mencegah transaksi dimanipulasi dengan memundurkan tanggal</td></tr>
                             <tr><td>Log teknis</td><td>Alamat IP, waktu akses, pesan error server</td><td>Keamanan, mencegah penyalahgunaan, memperbaiki gangguan</td></tr>
                         </tbody>
@@ -309,6 +310,7 @@
                     <li><strong>Lokasi</strong> (hanya Android versi lama) — Android 11 ke bawah mewajibkan izin ini untuk memindai perangkat Bluetooth. Aplikasi tidak membaca maupun menyimpan lokasi Anda.</li>
                     <li><strong>Foto / Galeri</strong> — untuk memilih foto produk atau logo toko.</li>
                     <li><strong>Internet</strong> — untuk sinkronisasi data dengan server.</li>
+                    <li><strong>Notifikasi</strong> — untuk menampilkan pengumuman layanan dari kami. Anda bisa mematikannya kapan saja; aplikasi kasir tetap berfungsi.</li>
                 </ul>
                 <p>Anda bisa mencabut izin kapan saja lewat Pengaturan HP. Fitur yang terkait (misalnya cetak struk) tidak akan berfungsi sampai izin diberikan kembali.</p>
             </section>
@@ -331,6 +333,7 @@
                 <p>Kami tidak menjual atau menyewakan data. Data hanya dapat diakses pihak lain dalam keadaan berikut:</p>
                 <ul>
                     <li><strong>Penyedia infrastruktur</strong> — perusahaan hosting server dan layanan email yang kami gunakan untuk menjalankan layanan. Mereka hanya memproses data atas nama kami.</li>
+                    <li><strong>Google Firebase Cloud Messaging</strong> — untuk mengirim notifikasi ke HP. Yang dikirim hanya token notifikasi beserta judul dan isi pengumuman, bukan data toko atau transaksi.</li>
                     <li><strong>Google Play</strong> — saat Anda mengunduh aplikasi, Google memproses data sesuai kebijakan privasinya sendiri.</li>
                     <li><strong>Kewajiban hukum</strong> — bila diwajibkan oleh peraturan perundang-undangan atau perintah aparat yang berwenang.</li>
                 </ul>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\AppSettingController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\OrderSyncController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\PushTokenController;
 use App\Http\Controllers\Api\ReceivableController;
 use App\Http\Controllers\Api\StockWriteOffController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -38,6 +40,45 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
+|--------------------------------------------------------------------------
+| API APLIKASI ADMIN (prefix /api/admin) — khusus superadmin
+|--------------------------------------------------------------------------
+|
+| Token dari POST /api/admin/login berkemampuan "admin". Token aplikasi
+| kasir tidak bisa dipakai di sini (middleware api.admin), dan token admin
+| tidak bisa dipakai di API kasir (middleware api.store).
+| Dokumentasi: docs/API-ADMIN-APP.md
+|
+*/
+Route::prefix('admin')->name('api.admin.')->group(function () {
+    Route::post('/login', [Admin\AuthController::class, 'login'])
+        ->middleware('throttle:5,1')->name('login');
+
+    Route::middleware(['auth:sanctum', 'api.admin'])->group(function () {
+        Route::get('/me', [Admin\AuthController::class, 'me'])->name('me');
+        Route::post('/logout', [Admin\AuthController::class, 'logout'])->name('logout');
+
+        Route::post('/push-token', [Admin\PushTokenController::class, 'store'])->name('push-token.store');
+        Route::delete('/push-token', [Admin\PushTokenController::class, 'destroy'])->name('push-token.destroy');
+
+        Route::get('/stores', [Admin\StoreController::class, 'index'])->name('stores.index');
+        Route::get('/stores/{store}', [Admin\StoreController::class, 'show'])->name('stores.show');
+        Route::post('/stores/{store}/approve', [Admin\StoreController::class, 'approve'])->name('stores.approve');
+        Route::post('/stores/{store}/reject', [Admin\StoreController::class, 'reject'])->name('stores.reject');
+        Route::post('/stores/{store}/unsuspend', [Admin\StoreController::class, 'unsuspend'])->name('stores.unsuspend');
+
+        Route::get('/announcements', [Admin\AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::post('/announcements', [Admin\AnnouncementController::class, 'store'])
+            ->middleware('throttle:10,1')->name('announcements.store');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| API APLIKASI KASIR
+|--------------------------------------------------------------------------
+*/
 Route::post('/register', [AuthController::class, 'register'])
     ->middleware('throttle:10,1')->name('auth.register');
 Route::post('/login', [AuthController::class, 'login'])
@@ -58,6 +99,10 @@ Route::middleware(['auth:sanctum', 'api.store', 'device'])->group(function () {
     Route::get('/license', [LicenseController::class, 'show'])->name('api.license');
     Route::post('/device/claim', [DeviceController::class, 'claim'])->name('api.device.claim');
     Route::post('/clock-events', [ClockEventController::class, 'store'])->name('api.clock-events');
+
+    // ------------------------------------------- push notification (FCM)
+    Route::post('/push-token', [PushTokenController::class, 'store'])->name('api.push-token.store');
+    Route::delete('/push-token', [PushTokenController::class, 'destroy'])->name('api.push-token.destroy');
 
     // --------------------------------------------------------- langganan
     Route::get('/subscription', [SubscriptionController::class, 'show'])->name('api.subscription');

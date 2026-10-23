@@ -60,6 +60,12 @@
                     'icon' => 'clock-alert',
                     'label' => 'Log Jam HP',
                 ],
+                [
+                    'route' => 'superadmin.announcements.index',
+                    'active' => 'superadmin.announcements.*',
+                    'icon' => 'megaphone',
+                    'label' => 'Pengumuman',
+                ],
             ],
             'Sistem' => [
                 [

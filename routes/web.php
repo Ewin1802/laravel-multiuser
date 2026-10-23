@@ -166,6 +166,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/log-jam', [Superadmin\TamperLogController::class, 'index'])->name('tamper.index');
 
+        Route::get('/pengumuman', [Superadmin\AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::post('/pengumuman', [Superadmin\AnnouncementController::class, 'store'])
+            ->middleware('throttle:10,1')->name('announcements.store');
+
         // pengaturan platform: landing page, aturan langganan, tagihan server
         Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');

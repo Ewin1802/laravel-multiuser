@@ -113,6 +113,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        // HP ini tidak menerima push lagi setelah logout
+        \App\Models\PushToken::where('user_id', $request->user()->id)
+            ->where('device_id', $request->header('X-Device-Id'))
+            ->delete();
+
         $request->user()->currentAccessToken()?->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Logged out']);
