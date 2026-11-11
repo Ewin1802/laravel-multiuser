@@ -13,10 +13,12 @@ use App\Models\SubscriptionPayment;
 use App\Services\DeviceManager;
 use App\Services\StoreManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
 /**
  * Daftar & detail toko untuk superadmin: setujui, blokir, catat
- * pembayaran, lepas perangkat kasir, lihat log jam mundur.
+ * pembayaran, lepas perangkat kasir, lihat log jam mundur, kirim
+ * tautan reset password ke pemilik toko.
  */
 class StoreController extends Controller
 {
@@ -125,6 +127,28 @@ class StoreController extends Controller
         ], fn ($v) => $v !== null));
 
         return back()->with('success', 'Pembayaran dicatat. Aktif sampai ' . $payment->period_end->translatedFormat('d M Y') . '.');
+    }
+
+    /**
+     * Kirim email "atur ulang password" ke pemilik toko. Superadmin TIDAK
+     * pernah melihat / menentukan password pemilik: pemilik sendiri yang
+     * membuat password baru lewat tautan di email (berlaku 60 menit).
+     */
+    public function sendPasswordReset(Store $store)
+    {
+        $owner = $store->owner;
+
+        if (! $owner || ! $owner->email) {
+            return back()->with('error', 'Toko ini tidak punya pemilik dengan email.');
+        }
+
+        $status = Password::sendResetLink(['email' => $owner->email]);
+
+        return match ($status) {
+            Password::RESET_LINK_SENT => back()->with('success', "Tautan reset password dikirim ke {$owner->email}. Berlaku 60 menit."),
+            Password::RESET_THROTTLED => back()->with('error', 'Tautan baru saja dikirim. Tunggu 1 menit sebelum mengirim lagi.'),
+            default => back()->with('error', __($status)),
+        };
     }
 
     public function updateNotes(Request $request, Store $store)

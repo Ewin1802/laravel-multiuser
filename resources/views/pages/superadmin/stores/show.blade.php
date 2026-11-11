@@ -23,6 +23,16 @@
                 <p>{{ $store->owner->name ?? '-' }} · {{ $store->owner->email ?? '' }} · {{ $store->owner->phone_number ?? '' }}</p>
             </div>
             <div class="s-actions-row">
+                @if ($store->owner?->email)
+                    <form method="POST" action="{{ route('superadmin.stores.password-reset', $store) }}"
+                        data-confirm="Kirim tautan reset password ke {{ $store->owner->email }}? Pemilik membuat password baru sendiri lewat email (berlaku 60 menit)."
+                        data-confirm-ok="Kirim tautan" data-confirm-tone="primary">
+                        @csrf
+                        <button class="p-btn p-btn-ghost" type="submit" title="Kirim email reset password ke pemilik toko">
+                            <i data-lucide="key-round"></i> Reset password
+                        </button>
+                    </form>
+                @endif
                 @if ($store->status === 'pending')
                     <form method="POST" action="{{ route('superadmin.stores.approve', $store) }}"
                         data-confirm="Setujui {{ $store->name }}? Trial langsung dimulai.">

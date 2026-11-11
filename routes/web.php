@@ -150,6 +150,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/toko/{store}/lepas-kasir', [Superadmin\StoreController::class, 'releaseDevice'])->name('stores.release-device');
         Route::post('/toko/{store}/pembayaran', [Superadmin\StoreController::class, 'recordPayment'])->name('stores.record-payment');
         Route::post('/toko/{store}/catatan', [Superadmin\StoreController::class, 'updateNotes'])->name('stores.notes');
+        Route::post('/toko/{store}/kirim-reset-password', [Superadmin\StoreController::class, 'sendPasswordReset'])
+            ->middleware('throttle:6,1')->name('stores.password-reset');
 
         Route::get('/pembayaran', [Superadmin\PaymentController::class, 'index'])->name('payments.index');
         Route::post('/pembayaran/{payment}/konfirmasi', [Superadmin\PaymentController::class, 'confirm'])->name('payments.confirm');
