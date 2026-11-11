@@ -28,10 +28,12 @@ class ProductController extends Controller
      *   batches[] batch yang masih bisa dijual (produk track_expiry) — supaya
      *             FEFO tetap berjalan saat HP offline
      *   stock_text  stok terurai, mis. "3 SLOP, 7 BUNGKUS, 13 BATANG"
+     *   type        item | menu (menu racikan: stok tidak dihitung, selalu bisa dijual)
      */
     public function index()
     {
-        $products = Product::with([
+        // bahan baku tidak dijual di kasir → tidak dikirim ke aplikasi
+        $products = Product::sellable()->with([
             'category',
             'units' => fn ($q) => $q->where('is_active', true),
             'batches' => fn ($q) => $q->where('status', StockBatch::STATUS_ACTIVE)

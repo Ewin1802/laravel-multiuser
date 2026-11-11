@@ -51,6 +51,10 @@ class StockWriteOffController extends Controller
                 $failed[] = ['client_uuid' => $row['client_uuid'], 'message' => 'Produk tidak ditemukan.'];
                 continue;
             }
+            if ($product->isMenu()) {
+                $failed[] = ['client_uuid' => $row['client_uuid'], 'message' => "{$product->name} adalah menu racikan (tanpa stok)."];
+                continue;
+            }
 
             try {
                 DB::transaction(fn () => $inventory->writeOff(

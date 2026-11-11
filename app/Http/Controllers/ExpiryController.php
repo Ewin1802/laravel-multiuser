@@ -45,7 +45,8 @@ class ExpiryController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $products = Product::orderBy('name')->get(['id', 'name', 'base_unit', 'stock', 'track_expiry']);
+        // Barang Keluar hanya untuk produk yang stoknya dihitung (bukan menu racikan)
+        $products = Product::stocked()->orderBy('name')->get(['id', 'name', 'base_unit', 'stock', 'track_expiry', 'type']);
 
         return view('pages.expiry.index', compact('expired', 'soon', 'writeOffs', 'products', 'today'));
     }
@@ -84,6 +85,12 @@ class ExpiryController extends Controller
         ]);
 
         $product = Product::findOrFail($data['product_id']);
+
+        if ($product->isMenu()) {
+            return back()->withInput()->withErrors([
+                'product_id' => "{$product->name} adalah menu racikan (tanpa stok). Catat bahan bakunya yang terbuang.",
+            ]);
+        }
 
         // BUNGKUS, BOTOL, PCS... tidak bisa pecahan; hanya KG / LITER / METER dst.
         if (! \App\Support\UnitConverter::allowsDecimal($product->base_unit)

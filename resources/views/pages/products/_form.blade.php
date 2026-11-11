@@ -74,6 +74,13 @@
             : [],
     );
     $trackExpiry = (bool) old('track_expiry', $p->track_expiry ?? false);
+    // jenis produk: barang / menu racikan / bahan baku
+    $typeValue = old('type', $p->type ?? ($defaultType ?? \App\Models\Product::TYPE_ITEM));
+    $typeCards = [
+        'item' => ['icon' => 'package', 'title' => 'Barang', 'desc' => 'Dijual di kasir, stok dihitung. Mis. rokok, air botol, mi instan.'],
+        'menu' => ['icon' => 'coffee', 'title' => 'Menu racikan', 'desc' => 'Dibuat saat dipesan, stok tidak dihitung. Mis. es kopi, nasi goreng.'],
+        'ingredient' => ['icon' => 'flask-conical', 'title' => 'Bahan baku', 'desc' => 'Tidak tampil di kasir, stok dihitung. Mis. susu UHT, biji kopi, cup.'],
+    ];
     $warnDays = old('expiry_warning_days', $p->expiry_warning_days ?? 30);
     $hasStock = $p && (float) $p->stock > 0;
 
@@ -110,6 +117,32 @@
 
     {{-- ===================== KOLOM UTAMA ===================== --}}
     <div class="p-form-main">
+
+        {{-- JENIS PRODUK --}}
+        <section class="p-card p-section">
+            <div class="p-section-head">
+                <span class="p-section-icon"><i data-lucide="shapes"></i></span>
+                <div>
+                    <h3>Jenis Produk</h3>
+                    <p>Menentukan apakah produk tampil di kasir dan apakah stoknya dihitung.</p>
+                </div>
+            </div>
+            <div class="pt-cards" role="radiogroup" aria-label="Jenis produk">
+                @foreach ($typeCards as $key => $card)
+                    <label class="pt-card">
+                        <input type="radio" name="type" value="{{ $key }}" @checked($typeValue === $key)>
+                        <span class="pt-card-body">
+                            <span class="pt-card-ic"><i data-lucide="{{ $card['icon'] }}"></i></span>
+                            <strong>{{ $card['title'] }}</strong>
+                            <small>{{ $card['desc'] }}</small>
+                        </span>
+                    </label>
+                @endforeach
+            </div>
+            @error('type')
+                <small class="p-error">{{ $message }}</small>
+            @enderror
+        </section>
 
         {{-- INFORMASI --}}
         <section class="p-card p-section">
@@ -257,7 +290,18 @@
 
                 <div class="p-span-2 p-margin" id="marginBox" aria-live="polite"></div>
 
-                <div class="p-field">
+                <div class="p-span-2 pt-note" data-type-show="menu">
+                    <i data-lucide="coffee"></i>
+                    <span><b>Menu racikan tidak punya stok.</b> Kasir selalu bisa menjualnya. Isi <b>modal per
+                            porsi</b> (perkiraan biaya bahan) supaya laporan laba tetap akurat.</span>
+                </div>
+                <div class="p-span-2 pt-note" data-type-show="ingredient">
+                    <i data-lucide="flask-conical"></i>
+                    <span><b>Bahan baku tidak tampil di aplikasi kasir.</b> Stoknya diisi lewat <b>Stok Masuk</b> dan
+                        dikurangi lewat <b>Barang Keluar</b> (terpakai / terbuang). Harga jual boleh 0.</span>
+                </div>
+
+                <div class="p-field" data-type-hide="menu">
                     <label for="stock">{{ $isEdit ? 'Stok' : 'Stok Awal' }} <span class="req">*</span></label>
                     <input type="number" id="stock" name="stock" value="{{ $stockValue }}"
                         @if (!$p || (float) $p->stock >= 0) min="0" @endif step="any" inputmode="decimal" required
@@ -330,7 +374,7 @@
         </section>
 
         {{-- EXPIRE --}}
-        <section class="p-card p-section">
+        <section class="p-card p-section" data-type-hide="menu">
             <div class="p-toggle-row">
                 <div>
                     <strong>Lacak tanggal expire (FEFO)</strong>
@@ -741,6 +785,30 @@
         });
         INITIAL.forEach(addRow);
 
+        /* ---------- jenis produk ---------- */
+        const typeInputs = document.querySelectorAll('input[name="type"]');
+        const stockInput = document.getElementById('stock');
+        const syncType = () => {
+            const type = document.querySelector('input[name="type"]:checked')?.value || 'item';
+            document.querySelectorAll('[data-type-hide]').forEach((el) => {
+                el.hidden = el.dataset.typeHide.split(' ').includes(type);
+            });
+            document.querySelectorAll('[data-type-show]').forEach((el) => {
+                el.hidden = !el.dataset.typeShow.split(' ').includes(type);
+            });
+            // menu: stok tidak dikirim wajib, expire dimatikan
+            if (stockInput) stockInput.required = type !== 'menu';
+            if (type === 'menu') {
+                const exp = document.getElementById('track_expiry');
+                if (exp && exp.checked) {
+                    exp.checked = false;
+                    exp.dispatchEvent(new Event('change'));
+                }
+            }
+        };
+        typeInputs.forEach((r) => r.addEventListener('change', syncType));
+        syncType();
+
         const expiry = document.getElementById('track_expiry');
         expiry.addEventListener('change', () => {
             document.getElementById('expiryFields').hidden = !expiry.checked;
@@ -880,3 +948,34 @@
         });
     });
 </script>
+
+<style>
+    .pt-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .pt-card { position: relative; display: flex; height: auto; margin: 0; padding: 0; cursor: pointer; font-weight: 400; }
+    .pt-card input { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+    .pt-card-body {
+        flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0;
+        padding: 14px; border-radius: 14px; border: 1.5px solid var(--p-line, #e5e7eb);
+        background: var(--p-surface, #fff); transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+    .pt-card-ic {
+        width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+        background: #f3f4f6; color: #4b5563; margin-bottom: 4px;
+    }
+    .pt-card-ic svg { width: 18px; height: 18px; }
+    .pt-card strong { font-size: 14.5px; }
+    .pt-card small { color: var(--p-muted, #6b7280); font-size: 12.5px; line-height: 1.45; }
+    .pt-card:hover .pt-card-body { border-color: #fdba8c; }
+    .pt-card input:checked + .pt-card-body {
+        border-color: #ff6a1a; background: #fff7f1; box-shadow: 0 0 0 3px rgba(255, 106, 26, .14);
+    }
+    .pt-card input:checked + .pt-card-body .pt-card-ic { background: linear-gradient(135deg, #ff8a3d, #ff6a1a); color: #fff; }
+    .pt-card input:focus-visible + .pt-card-body { outline: 3px solid #ff6a1a; outline-offset: 2px; }
+    .pt-note {
+        margin-top: 4px; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px;
+        background: #f6f7f9; color: #374151; font-size: 13.5px; line-height: 1.5;
+    }
+    .pt-note svg { width: 18px; height: 18px; flex: none; margin-top: 1px; color: #d9500a; }
+    [hidden] { display: none !important; }
+    @media (max-width: 720px) { .pt-cards { grid-template-columns: 1fr; } }
+</style>

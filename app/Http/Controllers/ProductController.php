@@ -41,6 +41,8 @@ class ProductController extends Controller
                         ->orWhereIn('products.id', \App\Models\ProductUnit::where('barcode', trim($name))->select('product_id'));
                 });
             })
+            ->when(array_key_exists((string) $request->type, Product::TYPES),
+                fn ($query) => $query->where('products.type', $request->type))
             ->orderByDesc('products.id')
             ->paginate(10)
             ->withQueryString();
@@ -57,7 +59,10 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('pages.products.create', compact('categories'));
+        // toko cafe (draft order aktif) → produk baru paling sering berupa menu racikan
+        $defaultType = auth()->user()?->store?->feature_draft_order ? Product::TYPE_MENU : Product::TYPE_ITEM;
+
+        return view('pages.products.create', compact('categories', 'defaultType'));
     }
 
     /**
@@ -70,7 +75,7 @@ class ProductController extends Controller
             'description'   => 'required',
             'price'         => 'required|numeric|min:0',
             'category_id'   => ['required', Tenant::exists('categories')],
-            'stock'         => 'required|numeric|min:0',
+            'stock'         => 'required_unless:type,menu|nullable|numeric|min:0',
             'status'        => 'required|boolean',
             'is_favorite'   => 'required|boolean',
             'base_unit'     => 'required|string|max:20',
@@ -105,10 +110,12 @@ class ProductController extends Controller
         // modal per satuan terkecil; boleh kosong (terisi otomatis dari Stok Masuk)
         $product->cost_price = $request->filled('cost_price') ? $request->cost_price : null;
         $product->category_id = $request->category_id;
-        $product->track_expiry = $request->boolean('track_expiry');
+        $product->type = $request->input('type', Product::TYPE_ITEM);
+        // menu racikan: tanpa expire & tanpa stok
+        $product->track_expiry = ! $product->isMenu() && $request->boolean('track_expiry');
         $product->expiry_warning_days = (int) $request->input('expiry_warning_days', 30);
         // produk ber-expire: stok awal lewat Stok Masuk (supaya punya batch)
-        $product->stock = $product->track_expiry ? 0 : $request->stock;
+        $product->stock = ($product->track_expiry || $product->isMenu()) ? 0 : $request->stock;
         $product->status = $request->status;
         $product->is_favorite = $request->is_favorite;
         $product->base_unit = strtoupper(trim($request->base_unit));
@@ -173,7 +180,7 @@ class ProductController extends Controller
             'price'         => 'required|numeric|min:0',
             'category_id'   => ['required', Tenant::exists('categories')],
             // boleh minus (oversell saat HP offline); angka minus BARU ditolak di bawah
-            'stock'         => 'required|numeric',
+            'stock'         => 'required_unless:type,menu|nullable|numeric',
             'status'        => 'required|boolean',
             'is_favorite'   => 'required|boolean',
             'base_unit'     => 'required|string|max:20',
@@ -186,6 +193,19 @@ class ProductController extends Controller
 
         $product = Product::findOrFail($id);
         $wasTracking = (bool) $product->track_expiry;
+        $newType = $request->input('type', $product->type ?: Product::TYPE_ITEM);
+
+        // jadi menu racikan → stok tidak dihitung lagi. Batch expire yang masih
+        // ada harus diselesaikan dulu supaya tidak "hilang" dari laporan.
+        if ($newType === Product::TYPE_MENU && ! $product->isMenu() && $wasTracking
+            && StockBatch::where('product_id', $product->id)->where('remaining_quantity', '>', 0)->exists()) {
+            return back()->withInput()->withErrors([
+                'type' => 'Produk ini masih punya stok ber-expire. Catat sisa stok sebagai Barang Keluar dulu, lalu ubah jadi Menu racikan.',
+            ]);
+        }
+        if ($newType === Product::TYPE_MENU) {
+            $request->merge(['track_expiry' => 0]);
+        }
 
         if (! $wasTracking && (float) $request->stock < 0
             && round((float) $request->stock, 3) !== round((float) $product->stock, 3)) {
@@ -209,8 +229,10 @@ class ProductController extends Controller
             $product->cost_price = $request->filled('cost_price') ? $request->cost_price : null;
         }
         $product->category_id = $request->category_id;
-        // produk ber-expire: stok hanya berubah lewat stok masuk / barang keluar
-        if (! $wasTracking) {
+        $product->type = $newType;
+        // produk ber-expire: stok hanya berubah lewat stok masuk / barang keluar.
+        // menu racikan: stok tidak dihitung, nilai lama dibiarkan.
+        if (! $wasTracking && $newType !== Product::TYPE_MENU) {
             $product->stock = $request->stock;
         }
         $product->status = $request->status;
@@ -350,6 +372,7 @@ class ProductController extends Controller
     private function extraRules(): array
     {
         return [
+            'type' => 'nullable|in:' . implode(',', array_keys(Product::TYPES)),
             'track_expiry' => 'nullable|boolean',
             'expiry_warning_days' => 'nullable|integer|min:1|max:365',
             'units' => 'nullable|array|max:10',

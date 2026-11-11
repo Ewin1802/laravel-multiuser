@@ -54,9 +54,16 @@
                         aria-label="Cari produk">
                 </label>
 
+                <select name="type" class="pt-filter" aria-label="Jenis produk" onchange="this.form.submit()">
+                    <option value="">Semua jenis</option>
+                    @foreach (\App\Models\Product::TYPES as $key => $label)
+                        <option value="{{ $key }}" @selected(request('type') === $key)>{{ $label }}</option>
+                    @endforeach
+                </select>
+
                 <button type="submit" class="p-btn p-btn-dark">Cari</button>
 
-                @if ($search)
+                @if ($search || request('type'))
                     <a href="{{ route('products.index') }}" class="p-btn p-btn-ghost">Reset</a>
                 @endif
 
@@ -100,6 +107,11 @@
                                         <div class="p-item-text">
                                             <div class="p-name">
                                                 {{ $product->name }}
+                                                @if ($product->isMenu())
+                                                    <span class="pt-tag is-menu" title="Stok tidak dihitung"><i data-lucide="coffee"></i> Menu</span>
+                                                @elseif ($product->isIngredient())
+                                                    <span class="pt-tag is-ingredient" title="Tidak tampil di kasir"><i data-lucide="flask-conical"></i> Bahan</span>
+                                                @endif
                                                 @if ($product->is_favorite)
                                                     <span class="p-tag-best" title="Ditandai terlaris">
                                                         <i data-lucide="flame"></i> Terlaris
@@ -130,8 +142,8 @@
                                 </td>
 
                                 <td class="cell-stock text-center" data-label="Stok">
-                                    <span class="p-stock {{ $stockClass }}">
-                                        {{ $stock == 0 ? 'Habis' : $product->stockBreakdown() }}
+                                    <span class="p-stock {{ $product->isMenu() ? 'is-menu' : $stockClass }}">
+                                        {{ $product->isMenu() ? 'Tanpa stok' : ($stock == 0 ? 'Habis' : $product->stockBreakdown()) }}
                                     </span>
                                 </td>
 
@@ -209,6 +221,15 @@
         .crud-page .p-codes { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 2px 0; color: var(--pm, #667080); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; }
         .crud-page .p-codes span { display: inline-flex; align-items: center; gap: 3px; }
         .crud-page .p-codes svg { width: 12px; height: 12px; }
+    </style>
+
+    <style>
+        .pt-filter { min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--p-line, #e5e7eb); background: #fff; font: inherit; }
+        .pt-tag { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; vertical-align: middle; }
+        .pt-tag svg { width: 12px; height: 12px; }
+        .pt-tag.is-menu { background: #fff1e8; color: #c2410c; }
+        .pt-tag.is-ingredient { background: #e8effe; color: #1d4ed8; }
+        .p-stock.is-menu { background: #f3f4f6; color: #6b7280; }
     </style>
 @endsection
 

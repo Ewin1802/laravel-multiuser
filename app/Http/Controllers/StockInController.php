@@ -285,9 +285,11 @@ class StockInController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'is_active']);
 
+        // menu racikan tidak punya stok → tidak bisa dicatat di Stok Masuk
         $products = Product::with(['units' => fn ($q) => $q->where('is_active', true)])
+            ->stocked()
             ->orderBy('name')
-            ->get(['id', 'name', 'base_unit', 'stock', 'price', 'cost_price', 'track_expiry'])
+            ->get(['id', 'name', 'base_unit', 'stock', 'price', 'cost_price', 'track_expiry', 'type'])
             ->map(fn (Product $p) => (object) [
                 'id' => $p->id,
                 'name' => $p->name,
@@ -327,6 +329,11 @@ class StockInController extends Controller
 
         foreach ($items as $i => $item) {
             $product = Product::findOrFail($item['product_id']);
+            if ($product->isMenu()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "items.$i.product_id" => "{$product->name} adalah menu racikan (tanpa stok). Catat bahan bakunya, bukan menunya.",
+                ]);
+            }
             $unit = ! empty($item['product_unit_id'])
                 ? ProductUnit::where('product_id', $product->id)->find($item['product_unit_id'])
                 : null;

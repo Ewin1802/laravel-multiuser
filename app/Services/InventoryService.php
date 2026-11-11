@@ -22,6 +22,8 @@ use Illuminate\Validation\ValidationException;
  *    rata-rata modal batch yang terpakai.
  *  - Produk biasa: modal = products.cost_price (harga beli terakhir per
  *    satuan terkecil).
+ *  - Menu racikan (type = menu): stok TIDAK dihitung. Penjualan hanya
+ *    mencatat modal per porsi (products.cost_price) untuk laporan laba.
  *
  * Panggil di dalam DB::transaction().
  */
@@ -44,6 +46,17 @@ class InventoryService
         $product = Product::whereKey($item->product_id)->lockForUpdate()->firstOrFail();
         $qty = round((float) $item->base_quantity, 3);
         $conflict = false;
+
+        // menu racikan: tidak ada stok yang dipotong, tidak pernah konflik
+        if ($product->isMenu()) {
+            $cost = $product->cost_price !== null ? (float) $product->cost_price : null;
+            $item->forceFill([
+                'cost_price' => $cost,
+                'cost_total' => $cost !== null ? round($cost * $qty, 2) : null,
+            ])->save();
+
+            return false;
+        }
 
         if (! $product->track_expiry) {
             $conflict = (float) $product->stock < $qty;
@@ -144,7 +157,10 @@ class InventoryService
             $used->delete();
         }
 
-        $product?->increment('stock', (float) $item->base_quantity);
+        // menu racikan tidak pernah memotong stok → tidak ada yang dikembalikan
+        if ($product && ! $product->isMenu()) {
+            $product->increment('stock', (float) $item->base_quantity);
+        }
     }
 
     // ==================================================================

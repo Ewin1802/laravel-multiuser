@@ -20,8 +20,9 @@ class StockConversionController extends Controller
     public function index(Request $request)
     {
         $products = Product::query()
+            ->stocked()
             ->orderBy('name')
-            ->get(['id', 'name', 'code', 'base_unit', 'stock', 'cost_price', 'status']);
+            ->get(['id', 'name', 'code', 'base_unit', 'stock', 'cost_price', 'status', 'type']);
 
         // pasangan terakhir per produk kemasan → isi otomatis di form
         $lastPairs = StockConversion::query()
@@ -79,6 +80,12 @@ class StockConversionController extends Controller
 
             $source = $locked[(int) $data['source_product_id']];
             $target = $locked[(int) $data['target_product_id']];
+
+            if ($source->isMenu() || $target->isMenu()) {
+                throw ValidationException::withMessages([
+                    'source_product_id' => 'Menu racikan tidak punya stok, jadi tidak bisa dipakai di Buka Kemasan.',
+                ]);
+            }
 
             $qty = round((float) $data['source_qty'], 2);
             $ratio = round((float) $data['ratio'], 3);

@@ -460,11 +460,12 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $totalStock = Product::sum('stock');
+        // menu racikan tidak punya stok → tidak ikut dihitung
+        $totalStock = Product::stocked()->sum('stock');
 
 
         // Nilai jual stok: stok yang BELUM terjual × harga jual
-        $stockValue = Product::selectRaw("
+        $stockValue = Product::stocked()->selectRaw("
             SUM(stock * price) as total
         ")
             ->value('total') ?? 0;
@@ -472,14 +473,14 @@ class DashboardController extends Controller
 
         // Modal stok: stok yang belum terjual × harga beli terakhir
         // (cost_price diisi otomatis saat mencatat Stok Masuk)
-        $stockCost = Product::selectRaw("
+        $stockCost = Product::stocked()->selectRaw("
             SUM(stock * COALESCE(cost_price, 0)) as total
         ")
             ->value('total') ?? 0;
 
 
         // Potensi untung, hanya dari produk yang harga belinya sudah diketahui
-        $stockMargin = Product::where('cost_price', '>', 0)
+        $stockMargin = Product::stocked()->where('cost_price', '>', 0)
             ->selectRaw("
                 SUM(stock * (price - cost_price)) as total
             ")
@@ -487,7 +488,7 @@ class DashboardController extends Controller
 
 
         // Produk berstok yang belum punya harga beli → modalnya belum terhitung
-        $stockNoCost = Product::where('stock', '>', 0)
+        $stockNoCost = Product::stocked()->where('stock', '>', 0)
             ->where(function ($query) {
                 $query->whereNull('cost_price')
                     ->orWhere('cost_price', '<=', 0);
@@ -502,6 +503,7 @@ class DashboardController extends Controller
         */
 
         $lowStockProducts = Product::with('category')
+            ->stocked()
             ->where('status', 1)
             ->where('stock', '<=', 5)
             ->orderBy('stock')

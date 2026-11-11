@@ -594,6 +594,7 @@ class OrderController extends Controller
         $order = Order::with('orderItems.product')->findOrFail($id);
 
         $products = Product::with(['units' => fn ($q) => $q->where('is_active', true)])
+            ->sellable()
             ->orderBy('name')
             ->get();
 

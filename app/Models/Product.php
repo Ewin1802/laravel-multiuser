@@ -11,8 +11,29 @@ class Product extends Model
 {
     use HasFactory, BelongsToStore;
 
+    /*
+    | Jenis produk (kolom type):
+    |   item        Barang        dijual di kasir, stok dihitung
+    |   menu        Menu racikan  dijual di kasir, stok TIDAK dihitung
+    |   ingredient  Bahan baku    tidak tampil di kasir, stok dihitung
+    */
+    public const TYPE_ITEM = 'item';
+    public const TYPE_MENU = 'menu';
+    public const TYPE_INGREDIENT = 'ingredient';
+
+    public const TYPES = [
+        self::TYPE_ITEM => 'Barang',
+        self::TYPE_MENU => 'Menu racikan',
+        self::TYPE_INGREDIENT => 'Bahan baku',
+    ];
+
+    protected $attributes = [
+        'type' => self::TYPE_ITEM,
+    ];
+
     protected $fillable = [
         'category_id',
+        'type',
         'code',
         'barcode',
         'name',
@@ -60,6 +81,42 @@ class Product extends Model
                 $product->barcode = Barcode::internal($product->id);
             }
         });
+    }
+
+    // ------------------------------------------------------------ jenis
+
+    /** Menu racikan: dibuat saat dipesan, stok tidak dihitung. */
+    public function isMenu(): bool
+    {
+        return $this->type === self::TYPE_MENU;
+    }
+
+    public function isIngredient(): bool
+    {
+        return $this->type === self::TYPE_INGREDIENT;
+    }
+
+    /** Stok dihitung (barang & bahan baku). */
+    public function tracksStock(): bool
+    {
+        return ! $this->isMenu();
+    }
+
+    public function typeLabel(): string
+    {
+        return self::TYPES[$this->type] ?? self::TYPES[self::TYPE_ITEM];
+    }
+
+    /** Produk yang stoknya dihitung: untuk Stok Masuk, Expire, Buka Kemasan, dst. */
+    public function scopeStocked($query)
+    {
+        return $query->where($this->qualifyColumn('type'), '!=', self::TYPE_MENU);
+    }
+
+    /** Produk yang tampil & bisa dijual di kasir. */
+    public function scopeSellable($query)
+    {
+        return $query->where($this->qualifyColumn('type'), '!=', self::TYPE_INGREDIENT);
     }
 
     public function category()
