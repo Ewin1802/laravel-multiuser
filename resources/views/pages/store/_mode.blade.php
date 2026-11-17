@@ -20,7 +20,7 @@
             'icon' => 'coffee',
             'title' => 'Mode Cafe',
             'desc' => 'Pesanan disimpan per meja dan dibayar saat tamu selesai. Cocok untuk cafe, warung makan, dan resto.',
-            'points' => ['Makan di tempat / bawa pulang', 'Simpan pesanan per meja (draft)', 'Cetak checker dapur', 'Produk baru otomatis jenis Menu racikan'],
+            'points' => ['Makan di tempat: pesanan disimpan ke meja', 'Tombol List Pesanan untuk bayar nanti', 'Cetak checker dapur', 'Produk baru otomatis jenis Menu racikan'],
         ],
     ];
 @endphp
