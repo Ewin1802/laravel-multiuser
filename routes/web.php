@@ -81,6 +81,7 @@ Route::middleware('auth')->group(function () {
             // ---------------- profil toko & perangkat
             Route::get('/toko', [StoreProfileController::class, 'edit'])->name('store.profile');
             Route::put('/toko', [StoreProfileController::class, 'update'])->name('store.profile.update');
+            Route::put('/toko/mode', [StoreProfileController::class, 'updateMode'])->name('store.mode.update');
 
             Route::resource('categories', CategoryController::class)->except(['show']);
 

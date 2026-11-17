@@ -54,4 +54,22 @@ class StoreProfileController extends Controller
 
         return back()->with('success', 'Profil toko tersimpan. HP kasir memakai data baru setelah sinkron.');
     }
+
+    /**
+     * Ganti mode kasir dari dashboard (Toko Umum / Mode Cafe).
+     */
+    public function updateMode(Request $request)
+    {
+        $data = $request->validate([
+            'feature_draft_order' => ['required', 'in:0,1'],
+        ]);
+
+        $store = $request->user()->store;
+        $store->feature_draft_order = (bool) $data['feature_draft_order'];
+        $store->save();
+
+        $label = $store->feature_draft_order ? 'Mode Cafe' : 'Toko Umum';
+
+        return back()->with('success', "{$label} aktif. Aplikasi kasir memakai mode baru setelah dibuka ulang atau disinkronkan.");
+    }
 }

@@ -16,6 +16,11 @@
 
         @include('pages.dashboard.partials.header')
 
+        {{-- mode kasir aktif: Toko Umum / Mode Cafe (bisa langsung diganti) --}}
+        @if (auth()->user()?->store)
+            @include('pages.store._mode', ['standalone' => true])
+        @endif
+
         {{-- pengingat hutang supplier: paling atas supaya pasti terlihat --}}
         @include('pages.dashboard.partials.payables')
 

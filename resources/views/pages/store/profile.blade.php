@@ -30,6 +30,8 @@
 
             <div class="p-form-layout">
                 <div class="p-form-main">
+                    @include('pages.store._mode', ['modeStore' => $store])
+
                     <section class="p-card p-section">
                         <div class="p-section-head">
                             <span class="p-section-icon"><i data-lucide="store"></i></span>
@@ -143,17 +145,10 @@
 
                 <aside class="p-form-side">
                     <section class="p-card p-section">
-                        <div class="p-toggle-row">
-                            <div>
-                                <strong>Draft Order (Cafe)</strong>
-                                <small>Pilih meja, simpan pesanan, bayar nanti.</small>
-                            </div>
-                            <label class="p-switch">
-                                <input type="checkbox" name="feature_draft_order" value="1"
-                                    @checked(old('feature_draft_order', $store->feature_draft_order))>
-                                <span class="p-switch-track"></span>
-                                <span class="sr-only">Aktifkan draft order</span>
-                            </label>
+                        <div class="km-side">
+                            <span>Mode kasir</span>
+                            <strong>{{ $store->feature_draft_order ? 'Mode Cafe' : 'Toko Umum' }}</strong>
+                            <small>Ubah lewat kartu <b>Mode Kasir</b> di atas, lalu klik Simpan.</small>
                         </div>
 
                         <div class="p-form-actions">
@@ -166,4 +161,10 @@
             </div>
         </form>
     </div>
+    <style>
+        .km-side { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; }
+        .km-side span { font-size: 12px; color: var(--p-muted, #6b7280); text-transform: uppercase; letter-spacing: .04em; }
+        .km-side strong { font-size: 17px; }
+        .km-side small { color: var(--p-muted, #6b7280); font-size: 12.5px; line-height: 1.5; }
+    </style>
 @endsection
