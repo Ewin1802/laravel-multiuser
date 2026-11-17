@@ -432,6 +432,109 @@
             color: var(--accent-text);
         }
 
+        /* ---------------- dua mode jualan ---------------- */
+        .modes-label {
+            display: block;
+            margin: 26px 0 10px;
+            color: var(--ink-2);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        .modes {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            max-width: 560px;
+        }
+
+        .mode {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 18px;
+            border: 1.5px solid var(--line);
+            background: var(--surface);
+            box-shadow: var(--card-shadow);
+            color: var(--ink);
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+        }
+
+        .mode:hover {
+            transform: translateY(-2px);
+        }
+
+        .mode.is-active {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 4px rgba(255, 106, 26, .12), var(--card-shadow);
+        }
+
+        .mode:focus-visible {
+            outline: 3px solid var(--orange);
+            outline-offset: 2px;
+        }
+
+        .mode-ic {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: var(--icon-bg);
+            color: var(--icon-ink);
+            transition: background .18s ease, color .18s ease;
+        }
+
+        .mode.is-active .mode-ic {
+            background: linear-gradient(135deg, var(--orange), var(--amber));
+            color: #fff;
+        }
+
+        .mode-ic svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        .mode-txt strong {
+            display: block;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+
+        .mode-txt small {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .modes-note {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .modes-note svg {
+            width: 15px;
+            height: 15px;
+            color: var(--teal);
+        }
+
+        .r-body[hidden] {
+            display: none;
+        }
+
         /* ---------------- meja kasir (demo) ---------------- */
         .counter {
             position: relative;
@@ -665,6 +768,228 @@
             font-weight: 800;
             letter-spacing: .14em;
             text-transform: uppercase;
+        }
+
+        /* owner tenang: pantau kasir dari jauh */
+        .trust-sec {
+            padding: 24px 0 64px;
+        }
+
+        .trust {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 48px;
+            align-items: center;
+            padding: 40px;
+            border-radius: 32px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            box-shadow: var(--card-shadow);
+        }
+
+        .trust h2 {
+            margin: 0 0 12px;
+            font-size: clamp(28px, 3.4vw, 40px);
+            line-height: 1.12;
+            letter-spacing: -.03em;
+            font-weight: 800;
+        }
+
+        .trust h2 em {
+            font-style: normal;
+            color: var(--accent-text);
+        }
+
+        .trust-lead {
+            margin: 0 0 22px;
+            color: var(--muted);
+            font-size: 16.5px;
+            line-height: 1.6;
+        }
+
+        .trust-list {
+            display: grid;
+            gap: 14px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .trust-list li {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr);
+            gap: 12px;
+            align-items: start;
+        }
+
+        .trust-list .ti {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: var(--icon-bg);
+            color: var(--icon-ink);
+        }
+
+        .trust-list .ti svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .trust-list strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .trust-list span.td {
+            display: block;
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* layar owner (contoh) */
+        .owner-screen {
+            border-radius: 22px;
+            background: linear-gradient(160deg, #1d2128, #12151a 60%);
+            color: #e8ebef;
+            padding: 18px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .os-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .os-top strong {
+            font-size: 14px;
+        }
+
+        .os-top small {
+            display: block;
+            color: #8b94a3;
+            font-size: 12px;
+        }
+
+        .os-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(52, 211, 153, .12);
+            color: #34d399;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .os-live i {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #34d399;
+            animation: blink 1.6s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: .3;
+            }
+        }
+
+        .os-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .os-stat {
+            padding: 12px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .os-stat small {
+            display: block;
+            color: #8b94a3;
+            font-size: 11.5px;
+        }
+
+        .os-stat b {
+            font-size: 18px;
+            letter-spacing: -.01em;
+        }
+
+        .os-rows {
+            display: grid;
+            gap: 6px;
+        }
+
+        .os-row {
+            display: grid;
+            grid-template-columns: 44px minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .035);
+            font-size: 13px;
+        }
+
+        .os-row time {
+            color: #8b94a3;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .os-row .who {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .os-row .who small {
+            color: #8b94a3;
+        }
+
+        .os-row b {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .os-row.is-flag {
+            background: rgba(255, 174, 31, .1);
+            border: 1px solid rgba(255, 174, 31, .28);
+        }
+
+        .os-flag {
+            grid-column: 2 / -1;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--amber);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .os-flag svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .os-foot {
+            margin-top: 12px;
+            color: #8b94a3;
+            font-size: 12px;
+            text-align: center;
         }
 
         /* yang didapat setelah berlangganan */
@@ -1223,6 +1548,12 @@
                 margin: 0 auto;
             }
 
+            .trust {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 28px;
+            }
+
             .fix {
                 grid-template-columns: 48px minmax(0, 1fr);
             }
@@ -1271,6 +1602,24 @@
 
             .hero-actions .btn {
                 flex: 1 1 100%;
+            }
+
+            .modes {
+                grid-template-columns: 1fr;
+            }
+
+            .trust {
+                padding: 22px 18px;
+                border-radius: 24px;
+            }
+
+            .owner-screen {
+                padding: 14px;
+            }
+
+            .os-row {
+                grid-template-columns: 40px minmax(0, 1fr) auto;
+                padding: 9px 10px;
             }
 
             section {
@@ -1394,11 +1743,35 @@
             <div class="wrap">
                 <div>
                     <span class="tagline"><span
-                            class="dot"></span>{{ $s->store_tagline ?: 'Aplikasi kasir Android untuk toko & cafe' }}</span>
+                            class="dot"></span>{{ $s->store_tagline ?: 'Aplikasi kasir Android untuk toko sembako & cafe' }}</span>
                     <h1>{!! $s->hero_title ?: 'Kasir toko &amp; cafe yang tetap jalan <em>walau internet mati</em>' !!}</h1>
                     <p class="lead">
-                        {{ $s->hero_subtitle ?: 'Jual per batang, bungkus, atau slop. Simpan pesanan per meja. Stok expire terpantau, dan omzet bisa dicek dari HP atau laptop di mana saja. Coba gratis ' . $trialDays . ' hari, tanpa kartu kredit.' }}
+                        {{ $s->hero_subtitle ?: 'Satu aplikasi untuk toko sembako dan cafe. Stok, barang expire, dan omzet bisa dicek dari HP atau laptop di mana saja. Coba gratis ' . $trialDays . ' hari, tanpa kartu kredit.' }}
                     </p>
+
+                    {{-- dua mode jualan: klik untuk melihat contoh struknya --}}
+                    <span class="modes-label" id="modesLabel">Pilih mode sesuai usaha Anda</span>
+                    <div class="modes" role="tablist" aria-labelledby="modesLabel">
+                        <button type="button" class="mode is-active" data-mode="sembako" role="tab"
+                            aria-selected="true" aria-controls="receipt">
+                            <span class="mode-ic"><i data-lucide="shopping-basket"></i></span>
+                            <span class="mode-txt">
+                                <strong>Mode Toko Sembako</strong>
+                                <small>Eceran &amp; grosir: batang, bungkus, slop, dus. Scan barcode, stok
+                                    otomatis berkurang.</small>
+                            </span>
+                        </button>
+                        <button type="button" class="mode" data-mode="cafe" role="tab" aria-selected="false"
+                            aria-controls="receipt">
+                            <span class="mode-ic"><i data-lucide="coffee"></i></span>
+                            <span class="mode-txt">
+                                <strong>Mode Cafe</strong>
+                                <small>Pesanan per meja, cetak checker dapur, bayar saat tamu selesai.</small>
+                            </span>
+                        </button>
+                    </div>
+                    <p class="modes-note"><i data-lucide="repeat"></i>Ganti mode kapan saja dari dashboard, tanpa
+                        biaya tambahan.</p>
 
                     <div class="hero-actions">
                         @if ($canRegister)
@@ -1412,9 +1785,12 @@
                     </div>
 
                     <ul class="hero-facts">
+                        <li><i data-lucide="eye"></i>Owner pantau kasir dari jauh</li>
                         <li><i data-lucide="monitor-smartphone"></i>1 akun: Web Admin + Android Kasir</li>
                         <li><i data-lucide="printer"></i>Printer struk Bluetooth</li>
                         <li><i data-lucide="wifi-off"></i>Offline sampai {{ $offlineText }}</li>
+                        <li><i data-lucide="scan-barcode"></i>Scan barcode pakai kamera HP</li>
+                        <li><i data-lucide="qr-code"></i>Bayar tunai atau QRIS</li>
                     </ul>
                 </div>
 
@@ -1431,7 +1807,8 @@
 
                     <div class="printer">
                         <div class="printer-slot"></div>
-                        <div class="receipt" id="receipt">
+                        <div class="receipt" id="receipt" aria-live="polite">
+                            <div class="r-body" data-receipt="sembako">
                             <div class="r-head">
                                 <strong>TOKO SUMBER REJEKI</strong>
                                 <span>14/10/2026 08:12 · Kasir 1</span>
@@ -1447,12 +1824,100 @@
                             <div class="r-row"><span>Tunai</span><span>500.000</span></div>
                             <div class="r-row"><span>Kembali</span><span>20.000</span></div>
                             <div class="r-foot">Terima kasih, sampai jumpa lagi</div>
+                            </div>
+
+                            <div class="r-body" data-receipt="cafe" hidden>
+                                <div class="r-head">
+                                    <strong>CAFE KOPI SENJA</strong>
+                                    <span>14/10/2026 19:40 · Meja 4</span>
+                                </div>
+                                <hr class="r-sep">
+                                <div class="r-row"><span>Kopi susu aren · 2</span><span>44.000</span></div>
+                                <div class="r-row"><span>Nasi goreng spesial · 1</span><span>28.000</span></div>
+                                <div class="r-row"><small>&nbsp;&nbsp;pedas, tanpa acar</small><span></span></div>
+                                <div class="r-row"><span>Roti bakar cokelat · 1</span><span>18.000</span></div>
+                                <hr class="r-sep">
+                                <div class="r-row"><span>Subtotal</span><span>90.000</span></div>
+                                <div class="r-row"><span>Layanan 5%</span><span>4.500</span></div>
+                                <div class="r-row"><span>Pajak PB1 10%</span><span>9.000</span></div>
+                                <div class="r-row r-total"><span>TOTAL</span><span>103.500</span></div>
+                                <div class="r-row"><span>QRIS</span><span>103.500</span></div>
+                                <div class="r-foot">Makan di tempat · Meja 4<br>Terima kasih, datang lagi ya</div>
+                            </div>
                             <div class="stamp-row"><span class="stamp" id="stamp">Terkirim</span></div>
                         </div>
                     </div>
 
                     <div class="queue" id="queue">
                         <i data-lucide="cloud-check"></i><span>Semua transaksi sudah <b>tersimpan di server</b></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ===================== OWNER TENANG ===================== --}}
+        <section class="trust-sec" id="pantau">
+            <div class="wrap">
+                <div class="trust">
+                    <div>
+                        <span class="eyebrow">Untuk pemilik toko</span>
+                        <h2>Titip toko ke kasir, <em>hati tetap tenang</em></h2>
+                        <p class="trust-lead">Tidak perlu menunggu di toko seharian. Setiap transaksi masuk ke web
+                            admin, jadi Anda bisa cek dari rumah, dari pasar, atau dari luar kota.</p>
+                        <ul class="trust-list">
+                            <li>
+                                <span class="ti"><i data-lucide="user-check"></i></span>
+                                <span><strong>Tercatat atas nama kasir</strong>
+                                    <span class="td">Setiap struk menyimpan nama kasir dan jam transaksinya.</span></span>
+                            </li>
+                            <li>
+                                <span class="ti"><i data-lucide="chart-line"></i></span>
+                                <span><strong>Omzet &amp; stok dari HP atau laptop</strong>
+                                    <span class="td">Lihat penjualan hari ini, stok tersisa, dan barang terlaris kapan
+                                        saja.</span></span>
+                            </li>
+                            <li>
+                                <span class="ti"><i data-lucide="shield-alert"></i></span>
+                                <span><strong>Yang janggal ditandai otomatis</strong>
+                                    <span class="td">Transaksi dengan jam HP janggal, stok jadi minus, atau dari HP
+                                        yang bukan kasir aktif diberi tanda "cek" di daftar transaksi.</span></span>
+                            </li>
+                            <li>
+                                <span class="ti"><i data-lucide="smartphone"></i></span>
+                                <span><strong>Satu HP kasir aktif</strong>
+                                    <span class="td">Pindah ke HP lain tercatat di riwayat, jadi Anda tahu kasir
+                                        memakai HP yang mana.</span></span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {{-- contoh layar owner --}}
+                    <div class="owner-screen" aria-label="Contoh layar pemilik toko">
+                        <div class="os-top">
+                            <div>
+                                <strong>Transaksi hari ini</strong>
+                                <small>Toko Sumber Rejeki · dilihat dari HP owner</small>
+                            </div>
+                            <span class="os-live"><i></i>Langsung</span>
+                        </div>
+                        <div class="os-stats">
+                            <div class="os-stat"><small>Omzet hari ini</small><b>Rp3.245.000</b></div>
+                            <div class="os-stat"><small>Transaksi</small><b>42</b></div>
+                        </div>
+                        <div class="os-rows">
+                            <div class="os-row"><time>14:32</time><span class="who">Rina
+                                    <small>· Tunai</small></span><b>87.500</b></div>
+                            <div class="os-row"><time>14:18</time><span class="who">Rina
+                                    <small>· QRIS</small></span><b>45.000</b></div>
+                            <div class="os-row is-flag"><time>13:56</time><span class="who">Budi
+                                    <small>· Tunai</small></span><b>120.000</b>
+                                <span class="os-flag"><i data-lucide="triangle-alert"></i>Jam HP janggal, perlu
+                                    dicek</span>
+                            </div>
+                            <div class="os-row"><time>13:40</time><span class="who">Budi
+                                    <small>· Tunai</small></span><b>32.000</b></div>
+                        </div>
+                        <p class="os-foot">Data masuk otomatis begitu HP kasir online.</p>
                     </div>
                 </div>
             </div>
@@ -1682,6 +2147,12 @@
                             produk, stok, dan laporan dari laptop) dan untuk aplikasi Android Kasir di HP.</p>
                     </details>
                     <details>
+                        <summary>Saya jarang di toko. Bagaimana memantau kasir?</summary>
+                        <p>Buka Web Admin dari HP atau laptop. Setiap transaksi tampil lengkap dengan nama kasir, jam,
+                            dan cara bayar, begitu HP kasir tersambung internet. Transaksi yang janggal, misalnya jam HP
+                            tidak wajar atau stok jadi minus, diberi tanda "cek" supaya mudah ditemukan.</p>
+                    </details>
+                    <details>
                         <summary>Cocok untuk cafe atau warung makan?</summary>
                         <p>Cocok. Aktifkan mode cafe untuk menyimpan pesanan per meja dan mencetak checker dapur. Menu
                             racikan seperti nasi goreng atau es kopi bisa dijual tanpa mengisi stok.</p>
@@ -1816,6 +2287,25 @@
             };
 
             sw.addEventListener('click', () => render(sw.getAttribute('aria-checked') !== 'true'));
+
+            // dua mode jualan → ganti contoh struk
+            const modes = document.querySelectorAll('.mode[data-mode]');
+            modes.forEach((btn) => btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode;
+                modes.forEach((b) => {
+                    const on = b === btn;
+                    b.classList.toggle('is-active', on);
+                    b.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                receipt.querySelectorAll('.r-body').forEach((body) => {
+                    body.hidden = body.dataset.receipt !== mode;
+                });
+                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    receipt.style.animation = 'none';
+                    void receipt.offsetWidth;
+                    receipt.style.animation = '';
+                }
+            }));
         })();
     </script>
 </body>
