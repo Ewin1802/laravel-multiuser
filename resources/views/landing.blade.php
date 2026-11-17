@@ -43,8 +43,8 @@
             --ink: #15181d;
             --ink-2: #2a2f37;
             --muted: #5b6472;
-            --line: #dfe3e8;
-            --fog: #eef1f4;
+            --line: #e8e3da;
+            --fog: #f1eee8;
             --paper: #fbfaf7;
             --orange: #ff6a1a;
             --orange-deep: #d9500a;
@@ -56,10 +56,18 @@
             --mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
 
             /* permukaan (berubah di mode gelap) */
-            --bg: #eef1f4;
+            --bg: #f6f4ef;
             --surface: #ffffff;
             --hover: rgba(21, 24, 29, .05);
-            --nav-bg: rgba(238, 241, 244, .82);
+            --nav-bg: rgba(246, 244, 239, .78);
+            /* mode terang premium: kertas hangat, garis tipis, bayangan berlapis */
+            --card-shadow: 0 1px 1px rgba(21, 24, 29, .04), 0 12px 32px -18px rgba(21, 24, 29, .28);
+            --card-shadow-hover: 0 1px 1px rgba(21, 24, 29, .05), 0 22px 44px -20px rgba(21, 24, 29, .34);
+            --hero-bg: radial-gradient(900px 480px at 88% -10%, rgba(255, 106, 26, .16), transparent 60%),
+                radial-gradient(700px 420px at -5% 100%, rgba(15, 157, 132, .10), transparent 60%);
+            --alt-bg: linear-gradient(180deg, #ffffff, #fbfaf7);
+            --icon-bg: linear-gradient(135deg, #fff3ea, #ffe6d4);
+            --icon-ink: #d9500a;
             --inverse: #15181d;
             --inverse-line: #15181d;
             --on-inverse: #ffffff;
@@ -96,6 +104,12 @@
                 --save-bg: rgba(15, 157, 132, .16);
                 --save-ink: #4fd1b5;
                 --shadow-lg: 0 40px 80px -30px rgba(0, 0, 0, .8);
+                --card-shadow: 0 1px 0 rgba(255, 255, 255, .03) inset;
+                --card-shadow-hover: 0 18px 40px -22px rgba(0, 0, 0, .9);
+                --hero-bg: radial-gradient(900px 480px at 88% -10%, rgba(255, 106, 26, .14), transparent 60%);
+                --alt-bg: var(--surface);
+                --icon-bg: #0f1215;
+                --icon-ink: #eef1f5;
                 color-scheme: dark;
             }
         }
@@ -120,6 +134,12 @@
             --save-bg: rgba(15, 157, 132, .16);
             --save-ink: #4fd1b5;
             --shadow-lg: 0 40px 80px -30px rgba(0, 0, 0, .8);
+            --card-shadow: 0 1px 0 rgba(255, 255, 255, .03) inset;
+            --card-shadow-hover: 0 18px 40px -22px rgba(0, 0, 0, .9);
+            --hero-bg: radial-gradient(900px 480px at 88% -10%, rgba(255, 106, 26, .14), transparent 60%);
+            --alt-bg: var(--surface);
+            --icon-bg: #0f1215;
+            --icon-ink: #eef1f5;
             color-scheme: dark;
         }
 
@@ -324,6 +344,7 @@
         /* ---------------- hero ---------------- */
         .hero {
             padding: 64px 0 88px;
+            background: var(--hero-bg);
         }
 
         .hero .wrap {
@@ -341,6 +362,7 @@
             border-radius: 999px;
             background: var(--surface);
             border: 1px solid var(--line);
+            box-shadow: var(--card-shadow);
             color: var(--ink-2);
             font-size: 13.5px;
             font-weight: 600;
@@ -360,11 +382,15 @@
             line-height: 1.04;
             letter-spacing: -.035em;
             font-weight: 800;
-            max-width: 14ch;
+            max-width: 15ch;
         }
 
         .hero h1 em {
             font-style: normal;
+            background: linear-gradient(100deg, var(--orange), var(--amber));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .lead {
@@ -626,7 +652,197 @@
         }
 
         section.alt {
+            background: var(--alt-bg);
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 12px;
+            color: var(--accent-text);
+            font-size: 12.5px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        /* yang didapat setelah berlangganan */
+        .perks-sec {
+            padding-top: 24px;
+        }
+
+        .perks {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .perk {
+            padding: 24px;
+            border-radius: var(--radius);
             background: var(--surface);
+            border: 1px solid var(--line);
+            box-shadow: var(--card-shadow);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .perk:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .perk-icon {
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            background: var(--icon-bg);
+            color: var(--icon-ink);
+        }
+
+        .perk-icon svg {
+            width: 23px;
+            height: 23px;
+        }
+
+        .perk h3 {
+            margin: 0 0 6px;
+            font-size: 17.5px;
+            letter-spacing: -.01em;
+        }
+
+        .perk p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14.5px;
+        }
+
+        .perk.is-hero {
+            grid-column: span 2;
+            grid-row: span 2;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #1d2128, #12151a 70%);
+            border-color: #2a3039;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .perk.is-hero::after {
+            content: '';
+            position: absolute;
+            right: -60px;
+            top: -80px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 106, 26, .35), transparent 65%);
+            pointer-events: none;
+        }
+
+        .perk.is-hero h3 {
+            font-size: 22px;
+        }
+
+        .perk.is-hero p {
+            color: #b3bac5;
+            max-width: 46ch;
+        }
+
+        .devices {
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
+            padding-top: 26px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .device {
+            flex: 1 1 180px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .device svg {
+            width: 24px;
+            height: 24px;
+            color: var(--amber);
+            flex: none;
+        }
+
+        .device b {
+            display: block;
+            font-size: 15px;
+        }
+
+        .device small {
+            color: #8f98a5;
+            font-size: 12.5px;
+        }
+
+        .device-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(15, 157, 132, .18);
+            color: #4fd1b5;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .device-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .perk.is-hero .perk-icon {
+            background: linear-gradient(135deg, #ff8a3d, var(--orange));
+            color: #fff;
+            box-shadow: 0 10px 24px -8px rgba(255, 106, 26, .6);
+        }
+
+        /* termasuk di semua paket */
+        .included {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 22px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .included li {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            box-shadow: var(--card-shadow);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .included svg {
+            width: 16px;
+            height: 16px;
+            color: var(--teal);
         }
 
         .sec-head {
@@ -663,6 +879,13 @@
             border-radius: var(--radius);
             background: var(--surface);
             border: 1px solid var(--line);
+            box-shadow: var(--card-shadow);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .fix:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
         }
 
         .fix-icon {
@@ -671,8 +894,8 @@
             width: 56px;
             height: 56px;
             border-radius: 16px;
-            background: var(--bg);
-            color: var(--ink);
+            background: var(--icon-bg);
+            color: var(--icon-ink);
         }
 
         .fix-icon svg {
@@ -793,6 +1016,7 @@
             border-radius: 24px;
             background: var(--surface);
             border: 1px solid var(--line);
+            box-shadow: var(--card-shadow);
         }
 
         .plan h3 {
@@ -827,9 +1051,10 @@
         }
 
         .plan.is-best {
-            background: var(--inverse);
+            background: linear-gradient(150deg, #1d2128, #12151a 70%);
             color: var(--on-inverse);
             border-color: var(--orange);
+            box-shadow: 0 24px 48px -24px rgba(255, 106, 26, .55);
         }
 
         .plan.is-best h3,
@@ -860,6 +1085,7 @@
             border-radius: 16px;
             background: var(--surface);
             border: 1px solid var(--line);
+            box-shadow: var(--card-shadow);
         }
 
         .faq summary {
@@ -910,8 +1136,10 @@
             flex-wrap: wrap;
             padding: 40px 44px;
             border-radius: 28px;
-            background: var(--orange);
+            background: radial-gradient(500px 260px at 100% 0%, rgba(255, 174, 31, .55), transparent 60%),
+                linear-gradient(135deg, #ff7a2e, #e2530c);
             color: #fff;
+            box-shadow: 0 30px 60px -30px rgba(226, 83, 12, .65);
         }
 
         .final-actions {
@@ -963,6 +1191,18 @@
 
         /* ---------------- responsif ---------------- */
         @media (max-width: 960px) {
+            .perks {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .perk.is-hero {
+                grid-row: auto;
+            }
+
+            .perk:last-child {
+                grid-column: span 2;
+            }
+
             .hero .wrap {
                 grid-template-columns: 1fr;
                 gap: 44px;
@@ -999,6 +1239,20 @@
         }
 
         @media (max-width: 720px) {
+            .perks {
+                grid-template-columns: 1fr;
+            }
+
+            .perk.is-hero,
+            .perk:last-child {
+                grid-column: auto;
+            }
+
+            .device-link {
+                width: 100%;
+                justify-content: center;
+            }
+
             .wrap {
                 padding: 0 16px;
             }
@@ -1140,10 +1394,10 @@
             <div class="wrap">
                 <div>
                     <span class="tagline"><span
-                            class="dot"></span>{{ $s->store_tagline ?: 'Aplikasi kasir Android untuk toko' }}</span>
-                    <h1>{!! $s->hero_title ?: 'Kasir toko yang tetap jalan walau internet mati' !!}</h1>
+                            class="dot"></span>{{ $s->store_tagline ?: 'Aplikasi kasir Android untuk toko & cafe' }}</span>
+                    <h1>{!! $s->hero_title ?: 'Kasir toko &amp; cafe yang tetap jalan <em>walau internet mati</em>' !!}</h1>
                     <p class="lead">
-                        {{ $s->hero_subtitle ?: 'Jual per batang, bungkus, atau slop. Stok expire terpantau, laporan bisa dilihat dari mana saja. Coba gratis ' . $trialDays . ' hari.' }}
+                        {{ $s->hero_subtitle ?: 'Jual per batang, bungkus, atau slop. Simpan pesanan per meja. Stok expire terpantau, dan omzet bisa dicek dari HP atau laptop di mana saja. Coba gratis ' . $trialDays . ' hari, tanpa kartu kredit.' }}
                     </p>
 
                     <div class="hero-actions">
@@ -1158,7 +1412,7 @@
                     </div>
 
                     <ul class="hero-facts">
-                        <li><i data-lucide="smartphone"></i>Android</li>
+                        <li><i data-lucide="monitor-smartphone"></i>1 akun: Web Admin + Android Kasir</li>
                         <li><i data-lucide="printer"></i>Printer struk Bluetooth</li>
                         <li><i data-lucide="wifi-off"></i>Offline sampai {{ $offlineText }}</li>
                     </ul>
@@ -1204,13 +1458,78 @@
             </div>
         </section>
 
+        {{-- ===================== YANG DIDAPAT ===================== --}}
+        <section class="perks-sec">
+            <div class="wrap">
+                <div class="sec-head">
+                    <span class="eyebrow">Satu langganan, semua termasuk</span>
+                    <h2>Bayar sekali, toko langsung lengkap</h2>
+                    <p>Tidak ada paket "Pro" tersembunyi atau biaya per fitur. Setelah berlangganan, semua ini
+                        langsung jadi milik toko Anda.</p>
+                </div>
+                <div class="perks">
+                    <article class="perk is-hero">
+                        <span class="perk-icon"><i data-lucide="monitor-smartphone"></i></span>
+                        <h3>1 akun untuk Web Admin &amp; Android Kasir</h3>
+                        <p>Email dan password yang sama dipakai di laptop untuk mengelola produk dan laporan, dan di HP
+                            untuk melayani pembeli. Tidak perlu akun tambahan.</p>
+                        <div class="devices" aria-hidden="true">
+                            <div class="device">
+                                <i data-lucide="laptop"></i>
+                                <div><b>Web Admin</b><small>Produk · stok · laporan</small></div>
+                            </div>
+                            <span class="device-link"><i data-lucide="key-round"></i>login sama</span>
+                            <div class="device">
+                                <i data-lucide="smartphone"></i>
+                                <div><b>Android Kasir</b><small>Jualan · struk · meja</small></div>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="perk">
+                        <span class="perk-icon"><i data-lucide="sparkles"></i></span>
+                        <h3>Semua fitur terbuka</h3>
+                        <p>Multi-satuan, stok expire, mode cafe, piutang, supplier, dan laporan laba. Semua ikut di
+                            setiap paket.</p>
+                    </article>
+                    <article class="perk">
+                        <span class="perk-icon"><i data-lucide="shield-check"></i></span>
+                        <h3>Data aman di server</h3>
+                        <p>Transaksi tersimpan di server dan dicadangkan rutin. HP hilang atau rusak, data toko tetap
+                            utuh.</p>
+                    </article>
+                    <article class="perk">
+                        <span class="perk-icon"><i data-lucide="chart-line"></i></span>
+                        <h3>Pantau toko dari mana saja</h3>
+                        <p>Cek omzet, laba, dan stok dari rumah lewat browser, tanpa harus berdiri di depan kasir.</p>
+                    </article>
+                    <article class="perk">
+                        <span class="perk-icon"><i data-lucide="refresh-cw"></i></span>
+                        <h3>Update gratis selamanya</h3>
+                        <p>Fitur baru dan perbaikan masuk otomatis lewat Play Store, tanpa biaya tambahan.</p>
+                    </article>
+                    <article class="perk">
+                        @if ($wa)
+                            <span class="perk-icon"><i data-lucide="message-circle"></i></span>
+                            <h3>Dibantu langsung</h3>
+                            <p>Ada kendala atau butuh bantuan pindah data? Hubungi admin lewat WhatsApp.</p>
+                        @else
+                            <span class="perk-icon"><i data-lucide="smartphone"></i></span>
+                            <h3>Ganti HP sekali ketuk</h3>
+                            <p>HP kasir rusak atau diganti? Pindahkan akses kasir ke HP baru dalam hitungan detik.</p>
+                        @endif
+                    </article>
+                </div>
+            </div>
+        </section>
+
         {{-- ===================== MASALAH → SOLUSI ===================== --}}
         <section id="fitur" class="alt">
             <div class="wrap">
                 <div class="sec-head">
-                    <h2>Dibuat untuk repotnya toko sehari-hari</h2>
-                    <p>Bukan sekadar mesin hitung. Aplikasi ini mengurus hal-hal yang biasanya bikin stok dan laba
-                        meleset.</p>
+                    <span class="eyebrow">Fitur</span>
+                    <h2>Dibuat untuk repotnya toko &amp; cafe sehari-hari</h2>
+                    <p>Bukan sekadar mesin hitung. Aplikasi ini mengurus hal-hal kecil yang biasanya bikin stok
+                        selisih dan laba meleset.</p>
                 </div>
 
                 <div class="fixes">
@@ -1256,6 +1575,17 @@
                     </article>
 
                     <article class="fix">
+                        <span class="fix-icon"><i data-lucide="coffee"></i></span>
+                        <div>
+                            <h3>Cafe &amp; warung makan? Siap.</h3>
+                            <p>Simpan pesanan per meja, tambah pesanan kapan saja, cetak checker dapur. Menu racikan
+                                seperti es kopi tidak perlu diisi stok.</p>
+                        </div>
+                        <div class="fix-demo">Meja 3 · 2 Es Kopi Susu<br>+ 1 Nasi Goreng → <b>disimpan</b><br>bayar
+                            saat tamu selesai</div>
+                    </article>
+
+                    <article class="fix">
                         <span class="fix-icon"><i data-lucide="hand-coins"></i></span>
                         <div>
                             <h3>Tahu untung yang sebenarnya</h3>
@@ -1273,8 +1603,9 @@
         <section>
             <div class="wrap">
                 <div class="sec-head">
-                    <h2>Mulai pakai hari ini</h2>
-                    <p>Satu akun untuk satu toko. Tidak perlu kartu kredit untuk mencoba.</p>
+                    <span class="eyebrow">Cara mulai</span>
+                    <h2>Mulai jualan hari ini</h2>
+                    <p>Daftar dalam 2 menit. Tanpa kartu kredit, tanpa biaya pemasangan.</p>
                 </div>
                 <ol class="steps">
                     <li class="step">
@@ -1285,12 +1616,14 @@
                     <li class="step">
                         <span class="step-no">Langkah 2</span>
                         <h3>Tunggu persetujuan</h3>
-                        <p>Setelah disetujui, uji coba {{ $trialDays }} hari langsung berjalan.</p>
+                        <p>Setelah disetujui, uji coba {{ $trialDays }} hari dimulai. Hari menunggu tidak ikut
+                            terhitung.</p>
                     </li>
                     <li class="step">
                         <span class="step-no">Langkah 3</span>
                         <h3>Mulai jualan</h3>
-                        <p>Masukkan produk (bisa import Excel), sambungkan printer, dan layani pembeli.</p>
+                        <p>Masukkan produk (bisa import Excel), sambungkan printer Bluetooth, dan langsung layani
+                            pembeli.</p>
                     </li>
                 </ol>
             </div>
@@ -1301,8 +1634,10 @@
             <section id="harga" class="alt">
                 <div class="wrap">
                     <div class="sec-head">
-                        <h2>Harga sederhana</h2>
-                        <p>Semua fitur ada di setiap paket. Pilih yang paling pas dengan cara bayar Anda.</p>
+                        <span class="eyebrow">Harga</span>
+                        <h2>Satu harga, semua fitur</h2>
+                        <p>Tanpa biaya pemasangan dan tanpa biaya tambahan per fitur. Pilih yang paling pas dengan cara
+                            bayar Anda.</p>
                     </div>
                     <div class="plans">
                         @foreach ($plans as $plan)
@@ -1321,6 +1656,12 @@
                             </div>
                         @endforeach
                     </div>
+                    <ul class="included" aria-label="Termasuk di semua paket">
+                        <li><i data-lucide="check"></i>Web Admin + Android Kasir</li>
+                        <li><i data-lucide="check"></i>Semua fitur</li>
+                        <li><i data-lucide="check"></i>Data dicadangkan rutin</li>
+                        <li><i data-lucide="check"></i>Update gratis</li>
+                    </ul>
                     <p class="plans-note">Bayar lewat transfer bank, lalu kirim bukti dari aplikasi. Masa aktif
                         bertambah setelah pembayaran dikonfirmasi.</p>
                 </div>
@@ -1331,9 +1672,20 @@
         <section id="tanya">
             <div class="wrap">
                 <div class="sec-head">
+                    <span class="eyebrow">Tanya jawab</span>
                     <h2>Yang sering ditanyakan</h2>
                 </div>
                 <div class="faq">
+                    <details>
+                        <summary>Apakah 1 akun bisa dipakai di web dan di HP?</summary>
+                        <p>Bisa. Setelah berlangganan, email dan password yang sama dipakai untuk Web Admin (kelola
+                            produk, stok, dan laporan dari laptop) dan untuk aplikasi Android Kasir di HP.</p>
+                    </details>
+                    <details>
+                        <summary>Cocok untuk cafe atau warung makan?</summary>
+                        <p>Cocok. Aktifkan mode cafe untuk menyimpan pesanan per meja dan mencetak checker dapur. Menu
+                            racikan seperti nasi goreng atau es kopi bisa dijual tanpa mengisi stok.</p>
+                    </details>
                     <details>
                         <summary>Berapa lama kasir bisa dipakai tanpa internet?</summary>
                         <p>Sampai {{ $offlineText }} sejak terakhir tersambung. Peringatan muncul lebih awal, dan
@@ -1368,8 +1720,9 @@
             <div class="wrap">
                 <div class="final-box">
                     <div>
-                        <h2>Coba gratis {{ $trialDays }} hari</h2>
-                        <p>Daftarkan toko sekarang. Uji coba dimulai setelah toko disetujui.</p>
+                        <h2>Siap jualan lebih tenang?</h2>
+                        <p>Coba gratis {{ $trialDays }} hari. Uji coba baru dihitung setelah toko disetujui, jadi
+                            tidak ada hari yang terbuang.</p>
                     </div>
                     <div class="final-actions">
                         @if ($canRegister)
