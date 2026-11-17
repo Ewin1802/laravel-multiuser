@@ -1866,9 +1866,10 @@
                             admin, jadi Anda bisa cek dari rumah, dari pasar, atau dari luar kota.</p>
                         <ul class="trust-list">
                             <li>
-                                <span class="ti"><i data-lucide="user-check"></i></span>
-                                <span><strong>Tercatat atas nama kasir</strong>
-                                    <span class="td">Setiap struk menyimpan nama kasir dan jam transaksinya.</span></span>
+                                <span class="ti"><i data-lucide="receipt-text"></i></span>
+                                <span><strong>Setiap transaksi tercatat</strong>
+                                    <span class="td">Lengkap dengan jam, isi belanja, dan cara bayarnya, lalu
+                                        terkirim ke server.</span></span>
                             </li>
                             <li>
                                 <span class="ti"><i data-lucide="chart-line"></i></span>
@@ -1905,16 +1906,16 @@
                             <div class="os-stat"><small>Transaksi</small><b>42</b></div>
                         </div>
                         <div class="os-rows">
-                            <div class="os-row"><time>14:32</time><span class="who">Rina
+                            <div class="os-row"><time>14:32</time><span class="who">#0142
                                     <small>· Tunai</small></span><b>87.500</b></div>
-                            <div class="os-row"><time>14:18</time><span class="who">Rina
+                            <div class="os-row"><time>14:18</time><span class="who">#0141
                                     <small>· QRIS</small></span><b>45.000</b></div>
-                            <div class="os-row is-flag"><time>13:56</time><span class="who">Budi
+                            <div class="os-row is-flag"><time>13:56</time><span class="who">#0140
                                     <small>· Tunai</small></span><b>120.000</b>
                                 <span class="os-flag"><i data-lucide="triangle-alert"></i>Jam HP janggal, perlu
                                     dicek</span>
                             </div>
-                            <div class="os-row"><time>13:40</time><span class="who">Budi
+                            <div class="os-row"><time>13:40</time><span class="who">#0139
                                     <small>· Tunai</small></span><b>32.000</b></div>
                         </div>
                         <p class="os-foot">Data masuk otomatis begitu HP kasir online.</p>
@@ -2148,7 +2149,7 @@
                     </details>
                     <details>
                         <summary>Saya jarang di toko. Bagaimana memantau kasir?</summary>
-                        <p>Buka Web Admin dari HP atau laptop. Setiap transaksi tampil lengkap dengan nama kasir, jam,
+                        <p>Buka Web Admin dari HP atau laptop. Setiap transaksi tampil lengkap dengan jam, isi belanja,
                             dan cara bayar, begitu HP kasir tersambung internet. Transaksi yang janggal, misalnya jam HP
                             tidak wajar atau stok jadi minus, diberi tanda "cek" supaya mudah ditemukan.</p>
                     </details>
