@@ -1706,10 +1706,134 @@
                 transition: none;
             }
         }
+
+        /* ---------------- pita promo (paling atas) ---------------- */
+        .promo-bar {
+            position: relative;
+            z-index: 60;
+            background: linear-gradient(95deg, #ff6a1a, #ff8a3d);
+            color: #fff;
+            font-size: 13.5px;
+        }
+
+        .promo-bar-inner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 9px 0;
+        }
+
+        .promo-track {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 18px;
+        }
+
+        .promo-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.3;
+        }
+
+        .promo-item svg {
+            width: 16px;
+            height: 16px;
+            flex: none;
+        }
+
+        .promo-item b {
+            font-weight: 800;
+        }
+
+        .promo-item code {
+            font-family: 'DM Mono', ui-monospace, monospace;
+            font-weight: 700;
+            letter-spacing: .04em;
+            background: rgba(255, 255, 255, .22);
+            border: 1px dashed rgba(255, 255, 255, .6);
+            padding: 1px 8px;
+            border-radius: 7px;
+        }
+
+        .promo-item small {
+            opacity: .85;
+            font-size: 12px;
+        }
+
+        .promo-cta {
+            flex: none;
+            background: #fff;
+            color: #c2410c;
+            font-weight: 800;
+            font-size: 12.5px;
+            padding: 7px 14px;
+            border-radius: 999px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: transform .15s ease;
+        }
+
+        .promo-cta:hover {
+            transform: translateY(-1px);
+        }
+
+        .promo-close {
+            flex: none;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            opacity: .85;
+            padding: 0 2px;
+        }
+
+        .promo-close:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .promo-bar-inner {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .promo-cta {
+                order: 3;
+            }
+        }
+
     </style>
 </head>
 
 <body>
+    {{-- ===================== PITA PROMO (otomatis dari kode promo aktif) ===================== --}}
+    @if (isset($promos) && $promos->isNotEmpty())
+        <div class="promo-bar" id="promoBar" data-promo="{{ $promos->pluck('code')->join('-') }}-{{ optional($promos->first()->ends_at)->format('Ymd') }}">
+            <div class="wrap promo-bar-inner">
+                <div class="promo-track">
+                    @foreach ($promos as $promo)
+                        <span class="promo-item">
+                            <i data-lucide="party-popper"></i>
+                            <span><b>{{ $promo->description ?: $promo->label() }}</b>
+                                — pakai kode <code>{{ $promo->code }}</code>
+                                <small>s/d {{ $promo->ends_at->translatedFormat('d M Y') }}</small></span>
+                        </span>
+                    @endforeach
+                </div>
+                @if ($canRegister)
+                    <a href="{{ route('register') }}" class="promo-cta">Daftar &amp; klaim</a>
+                @endif
+                <button type="button" class="promo-close" id="promoClose" aria-label="Tutup promo">&times;</button>
+            </div>
+        </div>
+    @endif
+
     <header class="nav">
         <div class="wrap">
             <a href="{{ url('/') }}" class="brand">
@@ -2307,6 +2431,22 @@
                     receipt.style.animation = '';
                 }
             }));
+        })();
+    </script>
+    <script>
+        // tutup pita promo; diingat per kumpulan kode (promo baru → muncul lagi)
+        (function () {
+            var bar = document.getElementById('promoBar');
+            if (!bar) return;
+            var key = 'promoBarClosed:' + (bar.dataset.promo || '');
+            try {
+                if (localStorage.getItem(key) === '1') { bar.style.display = 'none'; return; }
+            } catch (e) {}
+            var btn = document.getElementById('promoClose');
+            if (btn) btn.addEventListener('click', function () {
+                bar.style.display = 'none';
+                try { localStorage.setItem(key, '1'); } catch (e) {}
+            });
         })();
     </script>
 </body>

@@ -14,6 +14,7 @@ class PromoCode extends Model
     protected $fillable = [
         'code', 'description', 'discount_type', 'discount_value', 'max_discount', 'plan_ids',
         'starts_at', 'ends_at', 'max_uses', 'per_store_limit', 'first_payment_only', 'is_active',
+        'show_on_landing',
     ];
 
     protected $casts = [
@@ -26,7 +27,26 @@ class PromoCode extends Model
         'per_store_limit' => 'integer',
         'first_payment_only' => 'boolean',
         'is_active' => 'boolean',
+        'show_on_landing' => 'boolean',
     ];
+
+    /**
+     * Promo yang boleh tampil di halaman depan: aktif, ditandai untuk
+     * dipajang, dan tanggalnya sedang berjalan. Kuota habis disaring
+     * lewat status() di controller.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     */
+    public function scopeForLanding($query)
+    {
+        $today = now()->startOfDay();
+
+        return $query->where('is_active', true)
+            ->where('show_on_landing', true)
+            ->whereDate('starts_at', '<=', $today)
+            ->whereDate('ends_at', '>=', $today)
+            ->orderBy('ends_at');
+    }
 
     public function setCodeAttribute($value): void
     {

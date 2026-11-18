@@ -92,6 +92,7 @@ class PromoController extends Controller
         }
         $data['first_payment_only'] = $request->boolean('first_payment_only');
         $data['is_active'] = $request->boolean('is_active');
+        $data['show_on_landing'] = $request->boolean('show_on_landing');
 
         return $data;
     }

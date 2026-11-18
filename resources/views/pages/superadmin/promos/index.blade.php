@@ -201,6 +201,14 @@
                             </label>
                         </div>
 
+                        <div class="p-toggle-row">
+                            <div><strong>Tampilkan di halaman depan</strong><small>Promo aktif muncul otomatis sebagai pita di paling atas landing. Matikan untuk kode privat.</small></div>
+                            <label class="p-switch">
+                                <input type="checkbox" name="show_on_landing" value="1" @checked(old('show_on_landing', $p->show_on_landing ?? true))>
+                                <span class="p-switch-track"></span><span class="sr-only">Tampilkan di halaman depan</span>
+                            </label>
+                        </div>
+
                         <div class="pr-preview" id="preview" aria-live="polite"></div>
 
                         <div class="p-form-actions">
