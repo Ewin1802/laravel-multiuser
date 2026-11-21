@@ -29,13 +29,6 @@
                     </a>
                 @endif
 
-                @if (Route::has('products.import'))
-                    <a href="{{ route('products.import') }}" class="p-btn p-btn-ghost">
-                        <i data-lucide="file-spreadsheet"></i>
-                        Import Excel
-                    </a>
-                @endif
-
                 <a href="{{ route('products.create') }}" class="p-btn p-btn-primary">
                     <i data-lucide="plus"></i>
                     Tambah Produk
