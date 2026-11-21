@@ -3752,3 +3752,72 @@ button.p-chip {
     justify-content: center;
     min-height: 46px;
 }
+
+
+/* ------------------------------------------------------------
+   AJAKAN IMPORT EXCEL (halaman Produk)
+   ------------------------------------------------------------ */
+.p-import-hint {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 16px 18px;
+    border-radius: var(--prad, 18px);
+    background: linear-gradient(135deg, var(--pas, #fff1e8), #fff8f0);
+    border: 1px solid rgba(255, 106, 26, .22);
+}
+
+.p-import-hint .pih-ic {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, #ff8a3d, var(--pad, #e2550a));
+    box-shadow: 0 6px 14px rgba(226, 85, 10, .3);
+}
+
+.p-import-hint .pih-ic svg {
+    width: 22px;
+    height: 22px;
+}
+
+.p-import-hint .pih-text {
+    flex: 1 1 280px;
+    min-width: 220px;
+}
+
+.p-import-hint .pih-text strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--pk, #14171c);
+}
+
+.p-import-hint .pih-text span {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--pm, #667080);
+}
+
+.p-import-hint .pih-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+@container crudpage (max-width: 620px) {
+    .p-import-hint .pih-actions {
+        width: 100%;
+    }
+    .p-import-hint .pih-actions .p-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}

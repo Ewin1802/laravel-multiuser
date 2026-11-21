@@ -13,14 +13,14 @@ class PlanSeeder extends Seeder
         Plan::firstOrCreate(['code' => 'monthly'], [
             'name' => 'Bulanan',
             'duration_months' => 1,
-            'price' => 100000,
+            'price' => 50000,
             'is_active' => true,
         ]);
 
         Plan::firstOrCreate(['code' => 'yearly'], [
             'name' => 'Tahunan',
             'duration_months' => 12,
-            'price' => 1000000,
+            'price' => 500000,
             'is_active' => true,
         ]);
     }

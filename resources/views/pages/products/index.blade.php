@@ -43,6 +43,26 @@
             </div>
         </div>
 
+        {{-- Ajakan import Excel: biar tidak repot input satu per satu --}}
+        @if (Route::has('products.import'))
+            <div class="p-import-hint">
+                <span class="pih-ic"><i data-lucide="file-spreadsheet"></i></span>
+                <div class="pih-text">
+                    <strong>Tidak ingin input satu per satu?</strong>
+                    <span>Download template Excel, isi semua produk Anda di dalamnya, lalu import sekaligus.
+                        Nama kategori baru otomatis dibuat — tidak perlu diinput dulu.</span>
+                </div>
+                <div class="pih-actions">
+                    <a href="{{ asset('templates/template-import-produk.xlsx') }}" class="p-btn p-btn-primary" download>
+                        <i data-lucide="download"></i> Download Template
+                    </a>
+                    <a href="{{ route('products.import') }}" class="p-btn p-btn-ghost">
+                        <i data-lucide="upload"></i> Import Sekarang
+                    </a>
+                </div>
+            </div>
+        @endif
+
         <div class="p-card">
 
             {{-- PENCARIAN --}}
