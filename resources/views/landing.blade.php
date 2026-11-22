@@ -8,8 +8,23 @@
     $rp = fn($n) => 'Rp' . number_format((float) $n, 0, ',', '.');
     $canRegister = Route::has('register');
 
+    // tautan aplikasi di Google Play (bisa ditimpa lewat Pengaturan bila tersedia)
+    $playStoreUrl = $s->playstore_url ?: 'https://play.google.com/store/apps/details?id=id.zdtech.mycashier&hl=id';
+
     // hemat paket tahunan dibanding bayar bulanan 12x
     $monthly = $plans->firstWhere('duration_months', 1);
+
+    // promo landing dengan potongan terbesar untuk sebuah paket (null bila tak ada)
+    $bestPromo = function ($plan) use ($promos) {
+        if (! isset($promos) || $promos->isEmpty()) {
+            return null;
+        }
+
+        return $promos
+            ->filter(fn($p) => $p->appliesToPlan($plan->id) && $p->discountFor((int) $plan->price) > 0)
+            ->sortByDesc(fn($p) => $p->discountFor((int) $plan->price))
+            ->first();
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -1375,6 +1390,45 @@
             font-weight: 700;
         }
 
+        .plan .price-was {
+            margin: 10px 0 0;
+            font-size: 19px;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--muted);
+            text-decoration: line-through;
+            text-decoration-color: var(--orange);
+            text-decoration-thickness: 2px;
+        }
+
+        .plan.has-promo .price {
+            margin: 2px 0 2px;
+            color: var(--orange);
+        }
+
+        .plan .promo-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255, 106, 26, .12);
+            color: var(--orange);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .plan .promo-chip i {
+            width: 15px;
+            height: 15px;
+        }
+
+        .plan .promo-chip b {
+            font-weight: 800;
+            letter-spacing: .02em;
+        }
+
         .plan.is-best {
             background: linear-gradient(150deg, #1d2128, #12151a 70%);
             color: var(--on-inverse);
@@ -1392,11 +1446,87 @@
             color: var(--amber);
         }
 
+        .plan.is-best .price-was {
+            color: var(--on-inverse-muted);
+            text-decoration-color: var(--amber);
+        }
+
+        .plan.is-best.has-promo .price {
+            color: var(--amber);
+        }
+
+        .plan.is-best .promo-chip {
+            background: rgba(255, 174, 31, .16);
+            color: var(--amber);
+        }
+
         .plans-note {
             margin: 20px 0 0;
             color: var(--muted);
             font-size: 14.5px;
             max-width: 640px;
+        }
+
+        /* tombol Google Play */
+        .btn-play {
+            gap: 10px;
+            background: #0b0d10;
+            color: #fff;
+            border-color: #0b0d10;
+        }
+
+        .btn-play:hover {
+            background: #000;
+            border-color: #000;
+        }
+
+        .btn-play svg {
+            width: 22px;
+            height: 22px;
+            flex: none;
+        }
+
+        .btn-play .btn-play-txt {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.04;
+            text-align: left;
+        }
+
+        .btn-play .btn-play-txt small {
+            font-size: 10px;
+            font-weight: 600;
+            opacity: .82;
+            letter-spacing: .02em;
+        }
+
+        .btn-play .btn-play-txt strong {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .btn-play {
+                background: #fff;
+                color: #0b0d10;
+                border-color: #fff;
+            }
+
+            :root:not([data-theme="light"]) .btn-play:hover {
+                background: #eceff3;
+                border-color: #eceff3;
+            }
+        }
+
+        :root[data-theme="dark"] .btn-play {
+            background: #fff;
+            color: #0b0d10;
+            border-color: #fff;
+        }
+
+        :root[data-theme="dark"] .btn-play:hover {
+            background: #eceff3;
+            border-color: #eceff3;
         }
 
         /* tanya jawab */
@@ -1902,6 +2032,20 @@
                             <a href="{{ route('register') }}" class="btn btn-primary btn-lg"><i
                                     data-lucide="store"></i>{{ $s->hero_button ?: 'Daftarkan toko' }}</a>
                         @endif
+                        @if ($playStoreUrl)
+                            <a href="{{ $playStoreUrl }}" class="btn btn-lg btn-play" target="_blank"
+                                rel="noopener" aria-label="Download di Google Play">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M3.6 2.2C3.4 2.4 3.3 2.8 3.3 3.3v17.4c0 .5.1.9.4 1.1l.1.1 9.7-9.7v-.2L3.6 2.2z"
+                                        fill="#00C3FF" />
+                                    <path d="M17 15.3l-3.2-3.2v-.2L17 8.7l.1.1 3.9 2.2c1.1.6 1.1 1.7 0 2.3l-4 2z"
+                                        fill="#FFCE00" />
+                                    <path d="M17.1 15.2L13.8 12 3.6 22.2c.4.4 1 .4 1.7 0l11.8-6.7z" fill="#00E676" />
+                                    <path d="M17.1 8.8L5.3 2.1c-.7-.4-1.3-.4-1.7 0L13.8 12l3.3-3.2z" fill="#FF3D47" />
+                                </svg>
+                                <span class="btn-play-txt"><small>Download di</small><strong>Google Play</strong></span>
+                            </a>
+                        @endif
                         @if ($wa)
                             <a href="https://wa.me/{{ $wa }}" class="btn btn-lg" target="_blank"
                                 rel="noopener"><i data-lucide="message-circle"></i>Tanya via WhatsApp</a>
@@ -2235,13 +2379,23 @@
                                 $months = (int) $plan->duration_months;
                                 $save = $monthly && $months > 1 ? $monthly->price * $months - $plan->price : 0;
                                 $best = $save > 0 && $plan->is($plans->sortByDesc('duration_months')->first());
+                                $promo = $bestPromo($plan);
+                                $promoPrice = $promo ? $plan->price - $promo->discountFor((int) $plan->price) : null;
                             @endphp
-                            <div class="plan {{ $best ? 'is-best' : '' }}">
+                            <div class="plan {{ $best ? 'is-best' : '' }} {{ $promo ? 'has-promo' : '' }}">
                                 <h3>{{ $plan->name }}</h3>
-                                <div class="price">{{ $rp($plan->price) }}</div>
-                                <div class="per">per {{ $months == 1 ? 'bulan' : $months . ' bulan' }}</div>
-                                @if ($save > 0)
-                                    <span class="save">Hemat {{ $rp($save) }}</span>
+                                @if ($promo)
+                                    <div class="price-was">{{ $rp($plan->price) }}</div>
+                                    <div class="price">{{ $rp($promoPrice) }}</div>
+                                    <div class="per">per {{ $months == 1 ? 'bulan' : $months . ' bulan' }}</div>
+                                    <span class="promo-chip"><i data-lucide="ticket-percent"></i>pakai kode
+                                        <b>{{ $promo->code }}</b></span>
+                                @else
+                                    <div class="price">{{ $rp($plan->price) }}</div>
+                                    <div class="per">per {{ $months == 1 ? 'bulan' : $months . ' bulan' }}</div>
+                                    @if ($save > 0)
+                                        <span class="save">Hemat {{ $rp($save) }}</span>
+                                    @endif
                                 @endif
                             </div>
                         @endforeach
@@ -2324,6 +2478,20 @@
                         @if ($canRegister)
                             <a href="{{ route('register') }}" class="btn btn-lg"><i
                                     data-lucide="store"></i>Daftarkan toko</a>
+                        @endif
+                        @if ($playStoreUrl)
+                            <a href="{{ $playStoreUrl }}" class="btn btn-lg btn-play" target="_blank"
+                                rel="noopener" aria-label="Download di Google Play">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M3.6 2.2C3.4 2.4 3.3 2.8 3.3 3.3v17.4c0 .5.1.9.4 1.1l.1.1 9.7-9.7v-.2L3.6 2.2z"
+                                        fill="#00C3FF" />
+                                    <path d="M17 15.3l-3.2-3.2v-.2L17 8.7l.1.1 3.9 2.2c1.1.6 1.1 1.7 0 2.3l-4 2z"
+                                        fill="#FFCE00" />
+                                    <path d="M17.1 15.2L13.8 12 3.6 22.2c.4.4 1 .4 1.7 0l11.8-6.7z" fill="#00E676" />
+                                    <path d="M17.1 8.8L5.3 2.1c-.7-.4-1.3-.4-1.7 0L13.8 12l3.3-3.2z" fill="#FF3D47" />
+                                </svg>
+                                <span class="btn-play-txt"><small>Download di</small><strong>Google Play</strong></span>
+                            </a>
                         @endif
                         <a href="{{ route('login') }}" class="btn btn-lg is-ghost">Masuk</a>
                     </div>

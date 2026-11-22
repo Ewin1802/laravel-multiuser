@@ -46,10 +46,17 @@ class StoreManager
             $user->store_id = $store->id;
             $user->save();
 
+            // Persetujuan otomatis: toko langsung aktif & trial langsung jalan,
+            // tanpa menunggu superadmin menekan "Setujui".
+            if (config('kasir.auto_approve_stores')) {
+                $this->approve($store);
+                $user->refresh();
+            }
+
             return $user;
         });
 
-        $this->notifyNewRegistration($user->store_id, $data['store_name']);
+        $this->notifyNewRegistration($user->store_id, $data['store_name'], $user->store->status);
 
         return $user;
     }
@@ -60,16 +67,22 @@ class StoreManager
      * dan pendaftaran tetap berhasil walau FCM bermasalah.
      * Isi notif sengaja tanpa email / nomor HP pendaftar.
      */
-    private function notifyNewRegistration(int $storeId, string $storeName): void
+    private function notifyNewRegistration(int $storeId, string $storeName, string $status): void
     {
         $pending = Store::where('status', Store::STATUS_PENDING)->count();
+        $autoApproved = $status === Store::STATUS_ACTIVE;
 
-        dispatch(function () use ($storeId, $storeName, $pending) {
+        dispatch(function () use ($storeId, $storeName, $pending, $autoApproved) {
+            // Saat persetujuan otomatis, notif hanya kabar (toko sudah aktif).
+            $body = $autoApproved
+                ? 'Toko ini otomatis disetujui dan trial-nya sudah berjalan.'
+                : ($pending > 1
+                    ? "Ada {$pending} toko menunggu persetujuan. Ketuk untuk meninjau."
+                    : 'Toko ini menunggu persetujuan. Ketuk untuk meninjau.');
+
             app(FcmService::class)->notifyAdmins(
                 'Pendaftar baru: ' . $storeName,
-                $pending > 1
-                    ? "Ada {$pending} toko menunggu persetujuan. Ketuk untuk meninjau."
-                    : 'Toko ini menunggu persetujuan. Ketuk untuk meninjau.',
+                $body,
                 ['type' => 'new_store', 'store_id' => $storeId, 'pending' => $pending]
             );
         })->afterResponse();
@@ -80,12 +93,14 @@ class StoreManager
      * hanya sekali per toko: menyetujui ulang toko yang pernah trial tidak
      * mengulang trial-nya.
      */
-    public function approve(Store $store, User $by): Store
+    public function approve(Store $store, ?User $by = null): Store
     {
         return DB::transaction(function () use ($store, $by) {
             $store->status = Store::STATUS_ACTIVE;
             $store->approved_at ??= now();
-            $store->approved_by ??= $by->id;
+            if ($by) {
+                $store->approved_by ??= $by->id;
+            }
             $store->suspend_reason = null;
 
             if ($store->trial_started_at === null) {
