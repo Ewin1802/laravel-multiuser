@@ -197,11 +197,16 @@
 
                 <div class="p-field">
                     <label for="barcode">Barcode</label>
-                    <input type="text" id="barcode" name="barcode" value="{{ $barcodeValue }}"
-                        placeholder="Scan barcode di kemasan" maxlength="64" autocomplete="off" data-scan-field
-                        class="p-mono @error('barcode') is-invalid @enderror">
+                    <div class="p-scan-wrap">
+                        <input type="text" id="barcode" name="barcode" value="{{ $barcodeValue }}"
+                            placeholder="Scan barcode di kemasan" maxlength="64" autocomplete="off" data-scan-field
+                            class="p-mono @error('barcode') is-invalid @enderror">
+                        <button type="button" class="p-scan-btn" data-scan-open
+                            aria-label="Scan barcode pakai kamera HP"><i data-lucide="scan-line"></i><span>Scan</span></button>
+                    </div>
                     <small class="p-hint">
-                        Klik kolom ini lalu scan. Kosongkan jika kemasan tidak berbarcode — kode toko dibuat otomatis.
+                        Tekan <b>Scan</b> untuk pakai kamera HP, atau colok alat scan, atau ketik manual.
+                        Kosongkan jika kemasan tidak berbarcode — kode toko dibuat otomatis.
                     </small>
                     @error('barcode')
                         <small class="p-error">{{ $message }}</small>
@@ -766,8 +771,12 @@
                     <input type="number" name="units[${k}][price]" required min="0" step="1" value="${esc(u.price)}"
                         placeholder="345000" inputmode="numeric"></div>
                 <div class="p-field"><label>Barcode</label>
-                    <input type="text" name="units[${k}][barcode]" maxlength="64" value="${esc(u.barcode)}"
-                        placeholder="Opsional" class="p-mono" data-scan-field></div>
+                    <div class="p-scan-wrap">
+                        <input type="text" name="units[${k}][barcode]" maxlength="64" value="${esc(u.barcode)}"
+                            placeholder="Opsional" class="p-mono" data-scan-field>
+                        <button type="button" class="p-scan-btn is-icon" data-scan-open
+                            aria-label="Scan barcode satuan pakai kamera"><i data-lucide="scan-line"></i></button>
+                    </div></div>
                 <div class="p-field"><label>&nbsp;</label>
                     <button type="button" class="p-icon-btn is-danger" data-remove-unit aria-label="Hapus satuan"><i data-lucide="x"></i></button></div>`;
             rowsEl.appendChild(row);
@@ -947,6 +956,126 @@
             fields[fields.indexOf(input) + 1]?.focus();
         });
     });
+
+    // ============================================================
+    // SCAN BARCODE PAKAI KAMERA HP (mengisi kolom barcode di web)
+    // Dipakai bersama alat scan & ketik manual — tidak menggantikannya.
+    // Butuh HTTPS (sudah) + izin kamera. Pakai BarcodeDetector bawaan
+    // browser (Chrome Android), fallback ke ZXing untuk browser lain.
+    // ============================================================
+    (() => {
+        const css = `
+        .p-scan-wrap{display:flex;gap:8px;align-items:stretch}
+        .p-scan-wrap>input{flex:1;min-width:0}
+        .p-scan-btn{display:inline-flex;align-items:center;gap:6px;flex:none;cursor:pointer;
+            padding:0 14px;border-radius:12px;border:1px solid #d9500a;background:#ff6a1a;color:#fff;
+            font:inherit;font-weight:700;font-size:14px}
+        .p-scan-btn:hover{background:#e2550a}
+        .p-scan-btn.is-icon{padding:0 11px}
+        .p-scan-btn svg{width:17px;height:17px}
+        .p-scanner{position:fixed;inset:0;z-index:9999;background:rgba(8,10,14,.92);
+            display:none;align-items:center;justify-content:center;padding:18px}
+        .p-scanner.is-open{display:flex}
+        .p-scanner-box{width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px;align-items:center}
+        .p-scanner-view{position:relative;width:100%;aspect-ratio:3/4;max-height:70vh;border-radius:18px;
+            overflow:hidden;background:#000}
+        .p-scanner-view video{width:100%;height:100%;object-fit:cover;display:block}
+        .p-scanner-frame{position:absolute;inset:18% 10%;border:2px solid rgba(255,255,255,.9);
+            border-radius:12px;box-shadow:0 0 0 2000px rgba(0,0,0,.28)}
+        .p-scanner-msg{color:#fff;font-size:14px;text-align:center;min-height:20px}
+        .p-scanner-close{padding:12px 22px;border-radius:12px;border:0;background:#fff;color:#15181d;
+            font:inherit;font-weight:700;font-size:15px;cursor:pointer}`;
+        const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+        let overlay, video, msg, activeStream = null, zxing = null, raf = 0, target = null;
+
+        const build = () => {
+            overlay = document.createElement('div');
+            overlay.className = 'p-scanner';
+            overlay.innerHTML =
+                '<div class="p-scanner-box">' +
+                '<div class="p-scanner-view"><video playsinline muted></video><div class="p-scanner-frame"></div></div>' +
+                '<div class="p-scanner-msg"></div>' +
+                '<button type="button" class="p-scanner-close">Tutup</button></div>';
+            document.body.appendChild(overlay);
+            video = overlay.querySelector('video');
+            msg = overlay.querySelector('.p-scanner-msg');
+            overlay.querySelector('.p-scanner-close').addEventListener('click', close);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+        };
+
+        const loadZXing = () => new Promise((res, rej) => {
+            if (window.ZXing) return res(window.ZXing);
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+            s.onload = () => res(window.ZXing);
+            s.onerror = () => rej(new Error('load'));
+            document.head.appendChild(s);
+        });
+
+        const found = (raw) => {
+            const code = String(raw || '').trim();
+            if (!code || !target) return;
+            target.value = code;
+            target.dispatchEvent(new Event('input', { bubbles: true }));
+            try { navigator.vibrate?.(60); } catch (e) {}
+            close();
+        };
+
+        async function start() {
+            msg.textContent = 'Meminta izin kamera…';
+            try {
+                if ('BarcodeDetector' in window) {
+                    const det = new window.BarcodeDetector();
+                    activeStream = await navigator.mediaDevices.getUserMedia(
+                        { video: { facingMode: 'environment' } });
+                    video.srcObject = activeStream;
+                    await video.play();
+                    msg.textContent = 'Arahkan kamera ke barcode…';
+                    const tick = async () => {
+                        if (!overlay.classList.contains('is-open')) return;
+                        try {
+                            const hits = await det.detect(video);
+                            if (hits && hits.length) return found(hits[0].rawValue);
+                        } catch (e) {}
+                        raf = requestAnimationFrame(tick);
+                    };
+                    raf = requestAnimationFrame(tick);
+                } else {
+                    msg.textContent = 'Menyiapkan pemindai…';
+                    const ZX = await loadZXing();
+                    zxing = new ZX.BrowserMultiFormatReader();
+                    await zxing.decodeFromVideoDevice(null, video, (result) => {
+                        if (result) found(result.getText());
+                    });
+                    msg.textContent = 'Arahkan kamera ke barcode…';
+                }
+            } catch (err) {
+                msg.textContent = (err && err.name === 'NotAllowedError')
+                    ? 'Izin kamera ditolak. Aktifkan izin kamera untuk situs ini, lalu coba lagi.'
+                    : 'Kamera tidak bisa dibuka di browser ini. Pakai alat scan atau ketik manual.';
+            }
+        }
+
+        function close() {
+            if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            if (zxing) { try { zxing.reset(); } catch (e) {} zxing = null; }
+            if (activeStream) { activeStream.getTracks().forEach((t) => t.stop()); activeStream = null; }
+            if (video) video.srcObject = null;
+            overlay?.classList.remove('is-open');
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-scan-open]');
+            if (!btn) return;
+            const input = btn.closest('.p-scan-wrap')?.querySelector('input');
+            if (!input) return;
+            target = input;
+            if (!overlay) build();
+            overlay.classList.add('is-open');
+            start();
+        });
+    })();
 </script>
 
 <style>
