@@ -2788,12 +2788,14 @@
                             {{ $trialDays }} hari — uji coba baru dihitung setelah toko disetujui, jadi tidak ada
                             hari yang terbuang.</p>
                         @if (isset($promos) && $promos->isNotEmpty())
+                            @php
+                                $firstPromo = $promos->first();
+                                $promoEnds = $firstPromo->ends_at
+                                    ? ' · berakhir ' . \Illuminate\Support\Carbon::parse($firstPromo->ends_at)->translatedFormat('d M Y')
+                                    : '';
+                            @endphp
                             <p class="final-promo"><i data-lucide="ticket-percent"></i>Pakai kode
-                                <b>{{ $promos->first()->code }}</b> saat berlangganan@if (optional($promos->first())->ends_at)
-                                    · berakhir
-                                    {{ \Illuminate\Support\Carbon::parse($promos->first()->ends_at)->translatedFormat('d M Y') }}
-                                @endif
-                            </p>
+                                <b>{{ $firstPromo->code }}</b> saat berlangganan{{ $promoEnds }}</p>
                         @endif
                     </div>
                     <div class="final-actions">
