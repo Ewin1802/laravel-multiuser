@@ -1342,6 +1342,192 @@
             font-size: 15px;
         }
 
+        /* ---------------- etalase layar asli ---------------- */
+        .showcase {
+            background: var(--alt-bg);
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .shots-hint {
+            display: none;
+        }
+
+        .shots {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 36px 28px;
+            margin-top: 40px;
+        }
+
+        .shot {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone {
+            position: relative;
+            align-self: center;
+            width: 100%;
+            max-width: 278px;
+            padding: 10px;
+            border-radius: 40px;
+            background: linear-gradient(160deg, #20242b, #0b0d10);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, var(--card-shadow-hover);
+            transition: transform .25s ease;
+        }
+
+        .shot:hover .phone {
+            transform: translateY(-6px);
+        }
+
+        .phone::before {
+            content: "";
+            position: absolute;
+            top: 17px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88px;
+            height: 6px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .22);
+            z-index: 2;
+        }
+
+        .phone img {
+            display: block;
+            width: 100%;
+            border-radius: 31px;
+            background: #fff;
+        }
+
+        .shot-cap {
+            margin-top: 22px;
+            padding: 0 4px;
+        }
+
+        .shot-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 11px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .02em;
+            background: rgba(255, 106, 26, .12);
+            color: var(--orange-deep);
+        }
+
+        .shot-tag i {
+            width: 14px;
+            height: 14px;
+        }
+
+        .shot h3 {
+            margin: 0 0 7px;
+            font-size: 19px;
+            line-height: 1.25;
+            letter-spacing: -.01em;
+        }
+
+        .shot p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14.5px;
+            line-height: 1.55;
+        }
+
+        .showcase-tie {
+            margin-top: 48px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 26px 30px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #15181d, #23272f);
+            color: var(--on-inverse);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .showcase-tie .tie-txt strong {
+            display: block;
+            font-size: 19px;
+            letter-spacing: -.01em;
+        }
+
+        .showcase-tie .tie-txt span {
+            display: block;
+            margin-top: 5px;
+            color: var(--on-inverse-muted);
+            font-size: 14px;
+        }
+
+        .showcase-tie .tie-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .showcase-tie .btn:not(.btn-primary) {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+            border-color: rgba(255, 255, 255, .22);
+        }
+
+        .showcase-tie .btn:not(.btn-primary):hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        @media (max-width: 860px) {
+            .shots {
+                grid-template-columns: none;
+                grid-auto-flow: column;
+                grid-auto-columns: 76%;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                margin: 34px -16px 0;
+                padding: 4px 16px 18px;
+                scrollbar-width: none;
+            }
+
+            .shots::-webkit-scrollbar {
+                display: none;
+            }
+
+            .shot {
+                scroll-snap-align: center;
+            }
+
+            .phone {
+                max-width: 236px;
+            }
+
+            .shots-hint {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin: 16px 0 0;
+                color: var(--muted);
+                font-size: 13.5px;
+                font-weight: 600;
+            }
+
+            .shots-hint i {
+                width: 16px;
+                height: 16px;
+            }
+
+            .showcase-tie {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+        }
+
         /* harga */
         .plans {
             display: grid;
@@ -1613,6 +1799,35 @@
         .final-box p {
             margin: 0;
             color: rgba(255, 255, 255, .88);
+        }
+
+        .final-box h2 em {
+            font-style: normal;
+            background: linear-gradient(transparent 62%, rgba(255, 255, 255, .38) 0);
+            padding: 0 2px;
+        }
+
+        .final-box .final-promo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .18);
+            color: #fff;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
+        .final-box .final-promo i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .final-box .final-promo b {
+            letter-spacing: .03em;
+            text-transform: uppercase;
         }
 
         .final-box .btn {
@@ -2123,6 +2338,104 @@
             </div>
         </section>
 
+        {{-- ===================== ETALASE LAYAR ASLI ===================== --}}
+        <section class="showcase">
+            <div class="wrap">
+                <div class="sec-head">
+                    <span class="eyebrow">Intip isi aplikasinya</span>
+                    <h2>Ini layar aslinya, <em>bukan sekadar janji</em></h2>
+                    <p>Geser dan lihat sendiri bagaimana My Cashier membereskan hal yang paling bikin repot — dari
+                        jual kiloan sampai kelola meja cafe.</p>
+                </div>
+                <p class="shots-hint"><i data-lucide="move-horizontal"></i>Geser untuk lihat lebih banyak</p>
+
+                <div class="shots">
+                    <article class="shot">
+                        <div class="phone"><img src="{{ asset('images/landing/01-ganti-hp.png') }}"
+                                alt="Pindahkan kasir ke HP lain" loading="lazy"></div>
+                        <div class="shot-cap">
+                            <span class="shot-tag"><i data-lucide="shield-check"></i>Anti bocor</span>
+                            <h3>Ganti HP kasir sekali ketuk</h3>
+                            <p>HP hilang atau diganti? Pindahkan kasir ke HP baru dalam sedetik. HP lama otomatis
+                                berhenti transaksi — tidak ada dobel, tidak ada celah.</p>
+                        </div>
+                    </article>
+
+                    <article class="shot">
+                        <div class="phone"><img src="{{ asset('images/landing/02-jual-kilo.png') }}"
+                                alt="Jual per kilogram dengan desimal" loading="lazy"></div>
+                        <div class="shot-cap">
+                            <span class="shot-tag"><i data-lucide="scale"></i>Tanpa kalkulator</span>
+                            <h3>Jual per kilo, bebas desimal</h3>
+                            <p>Beras, gula, bumbu — ketik 0,5 atau 1,7 kg dan totalnya langsung muncul. Timbang,
+                                ketik, selesai.</p>
+                        </div>
+                    </article>
+
+                    <article class="shot">
+                        <div class="phone"><img src="{{ asset('images/landing/03-tempo-piutang.png') }}"
+                                alt="Penjualan tempo dan piutang" loading="lazy"></div>
+                        <div class="shot-cap">
+                            <span class="shot-tag"><i data-lucide="notebook-pen"></i>Auto-catat</span>
+                            <h3>Kasih utang tanpa takut lupa</h3>
+                            <p>Penjualan tempo langsung jadi piutang: siapa, berapa, dan kapan jatuh tempo. Cicilan
+                                dan pelunasan tercatat rapi.</p>
+                        </div>
+                    </article>
+
+                    <article class="shot">
+                        <div class="phone"><img src="{{ asset('images/landing/04-multi-satuan.png') }}"
+                                alt="Satu produk banyak satuan" loading="lazy"></div>
+                        <div class="shot-cap">
+                            <span class="shot-tag"><i data-lucide="boxes"></i>Stok klop</span>
+                            <h3>Satu produk, banyak satuan</h3>
+                            <p>Batang, bungkus, slop — jual satuan mana pun, stok berkurang otomatis dan tetap benar
+                                sampai batang terakhir.</p>
+                        </div>
+                    </article>
+
+                    <article class="shot">
+                        <div class="phone"><img src="{{ asset('images/landing/05-meja-cafe.png') }}"
+                                alt="Tampilan meja cafe" loading="lazy"></div>
+                        <div class="shot-cap">
+                            <span class="shot-tag"><i data-lucide="coffee"></i>Mode Cafe</span>
+                            <h3>Kelola meja seperti POS mahal</h3>
+                            <p>Lihat semua meja dalam satu layar: mana kosong, mana terisi, berapa okupansi. Buka
+                                meja cukup sekali ketuk.</p>
+                        </div>
+                    </article>
+
+                    <article class="shot">
+                        <div class="phone"><img src="{{ asset('images/landing/06-bayar-pesanan.png') }}"
+                                alt="Tambah dan bayar pesanan meja" loading="lazy"></div>
+                        <div class="shot-cap">
+                            <span class="shot-tag"><i data-lucide="receipt-text"></i>Pesanan aman</span>
+                            <h3>Simpan pesanan, bayar belakangan</h3>
+                            <p>Tamu pesan dulu, tambah kapan saja, lalu Bayar &amp; Tutup Meja saat selesai. Tidak
+                                ada pesanan yang terlewat.</p>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="showcase-tie">
+                    <div class="tie-txt">
+                        <strong>Semua yang Anda lihat di atas ada dalam satu langganan.</strong>
+                        <span>Tanpa paket "Pro", tanpa biaya per fitur. Coba gratis {{ $trialDays }} hari, tanpa
+                            kartu kredit.</span>
+                    </div>
+                    <div class="tie-actions">
+                        @if ($canRegister)
+                            <a href="{{ route('register') }}" class="btn btn-primary btn-lg"><i
+                                    data-lucide="store"></i>Coba gratis {{ $trialDays }} hari</a>
+                        @endif
+                        @if ($plans->isNotEmpty())
+                            <a href="#harga" class="btn btn-lg">Lihat harga</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </section>
+
         {{-- ===================== OWNER TENANG ===================== --}}
         <section class="trust-sec" id="pantau">
             <div class="wrap">
@@ -2470,9 +2783,18 @@
             <div class="wrap">
                 <div class="final-box">
                     <div>
-                        <h2>Siap jualan lebih tenang?</h2>
-                        <p>Coba gratis {{ $trialDays }} hari. Uji coba baru dihitung setelah toko disetujui, jadi
-                            tidak ada hari yang terbuang.</p>
+                        <h2>Mulai jualan lebih tenang, <em>mulai hari ini</em></h2>
+                        <p>Layani pembeli walau internet mati, dan cek omzet dari mana saja. Coba gratis
+                            {{ $trialDays }} hari — uji coba baru dihitung setelah toko disetujui, jadi tidak ada
+                            hari yang terbuang.</p>
+                        @if (isset($promos) && $promos->isNotEmpty())
+                            <p class="final-promo"><i data-lucide="ticket-percent"></i>Pakai kode
+                                <b>{{ $promos->first()->code }}</b> saat berlangganan@if (optional($promos->first())->ends_at)
+                                    · berakhir
+                                    {{ \Illuminate\Support\Carbon::parse($promos->first()->ends_at)->translatedFormat('d M Y') }}
+                                @endif
+                            </p>
+                        @endif
                     </div>
                     <div class="final-actions">
                         @if ($canRegister)
