@@ -8,6 +8,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\OrderController;
+use App\Http\Middleware\TrackPageVisit;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProductLabelController;
@@ -29,10 +30,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Halaman depan aplikasi (menawarkan aplikasi kasir ke toko baru)
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+// Kunjungan dicatat untuk statistik (Superadmin → Kunjungan Web).
+Route::get('/', [LandingController::class, 'index'])->middleware(TrackPageVisit::class)->name('landing');
 
 // Kebijakan privasi (URL ini diisi di Google Play Console)
-Route::get('/kebijakan-privasi', [LandingController::class, 'privacy'])->name('privacy');
+Route::get('/kebijakan-privasi', [LandingController::class, 'privacy'])->middleware(TrackPageVisit::class)->name('privacy');
 Route::redirect('/privacy', '/kebijakan-privasi', 301);
 Route::redirect('/hapus-akun', '/kebijakan-privasi#hapus-akun', 302);
 
@@ -168,6 +170,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/promo/{promo}', [Superadmin\PromoController::class, 'destroy'])->name('promos.destroy');
 
         Route::get('/log-jam', [Superadmin\TamperLogController::class, 'index'])->name('tamper.index');
+
+        Route::get('/kunjungan', [Superadmin\VisitController::class, 'index'])->name('visits.index');
 
         Route::get('/pengumuman', [Superadmin\AnnouncementController::class, 'index'])->name('announcements.index');
         Route::post('/pengumuman', [Superadmin\AnnouncementController::class, 'store'])

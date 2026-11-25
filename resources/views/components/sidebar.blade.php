@@ -61,6 +61,12 @@
                     'label' => 'Log Jam HP',
                 ],
                 [
+                    'route' => 'superadmin.visits.index',
+                    'active' => 'superadmin.visits.*',
+                    'icon' => 'bar-chart-3',
+                    'label' => 'Kunjungan Web',
+                ],
+                [
                     'route' => 'superadmin.announcements.index',
                     'active' => 'superadmin.announcements.*',
                     'icon' => 'megaphone',
