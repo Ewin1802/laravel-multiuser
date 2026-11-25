@@ -551,6 +551,141 @@
         }
 
         /* ---------------- meja kasir (demo) ---------------- */
+        /* ---- hero: slideshow HP Android ---- */
+        .hero-phone-wrap {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            padding: 8px 0 4px;
+        }
+
+        .hero-phone-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -4% 6% 12%;
+            z-index: 0;
+            background: radial-gradient(58% 48% at 72% 22%, rgba(255, 106, 26, .40), transparent 70%),
+                radial-gradient(52% 44% at 24% 86%, rgba(255, 174, 31, .28), transparent 72%);
+            filter: blur(12px);
+        }
+
+        .hero-phone {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 298px);
+            padding: 10px;
+            border-radius: 46px;
+            background: linear-gradient(160deg, #20242b, #0b0d10);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, .07) inset, var(--shadow-lg);
+        }
+
+        .hp-notch {
+            position: absolute;
+            top: 19px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            width: 92px;
+            height: 7px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .22);
+        }
+
+        .hp-screen {
+            position: relative;
+            border-radius: 36px;
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 108 / 226;
+        }
+
+        .hp-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity .9s ease, transform 4.2s ease;
+        }
+
+        .hp-slide.is-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hp-badge {
+            position: absolute;
+            z-index: 3;
+            top: 18px;
+            right: -8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 13px;
+            border-radius: 999px;
+            background: var(--surface);
+            color: var(--ink);
+            font-size: 12.5px;
+            font-weight: 800;
+            border: 1px solid var(--line);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .hp-badge i {
+            width: 15px;
+            height: 15px;
+            color: var(--orange);
+        }
+
+        .hp-cap {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 92%;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #15181d, #23272f);
+            color: #fff;
+            font-size: 13.5px;
+            font-weight: 700;
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .hp-cap i {
+            width: 16px;
+            height: 16px;
+            color: var(--amber);
+            flex: none;
+        }
+
+        .hp-dots {
+            display: flex;
+            gap: 8px;
+            z-index: 1;
+        }
+
+        .hp-dots button {
+            width: 8px;
+            height: 8px;
+            padding: 0;
+            border: 0;
+            border-radius: 99px;
+            cursor: pointer;
+            background: rgba(140, 146, 158, .42);
+            transition: width .25s ease, background .25s ease;
+        }
+
+        .hp-dots button.is-active {
+            width: 22px;
+            background: var(--orange);
+        }
+
         .counter {
             position: relative;
             padding: 22px 22px 0;
@@ -2277,63 +2412,29 @@
                     </ul>
                 </div>
 
-                {{-- meja kasir: coba matikan internet --}}
-                <div class="counter" id="counter" aria-label="Contoh struk dari aplikasi kasir">
-                    <div class="counter-top">
-                        <span class="net">
-                            <span class="net-state"><i></i><span id="netLabel">Online</span></span>
-                            <button type="button" class="switch" id="netSwitch" role="switch" aria-checked="true"
-                                aria-label="Internet"></button>
-                        </span>
-                        <span class="counter-hint" id="netHint">Coba matikan internet</span>
-                    </div>
-
-                    <div class="printer">
-                        <div class="printer-slot"></div>
-                        <div class="receipt" id="receipt" aria-live="polite">
-                            <div class="r-body" data-receipt="sembako">
-                            <div class="r-head">
-                                <strong>TOKO SUMBER REJEKI</strong>
-                                <span>14/10/2026 08:12 · Kasir 1</span>
-                            </div>
-                            <hr class="r-sep">
-                            <div class="r-row"><span>Rokok A · 1 SLOP</span><span>345.000</span></div>
-                            <div class="r-row"><span>Rokok A · 2 BUNGKUS</span><span>72.000</span></div>
-                            <div class="r-row"><span>Susu UHT · 3 PCS</span><span>18.000</span></div>
-                            <div class="r-row"><small>&nbsp;&nbsp;exp 12/11 diambil dulu</small><span></span></div>
-                            <div class="r-row"><span>Air mineral · 1 DUS</span><span>45.000</span></div>
-                            <hr class="r-sep">
-                            <div class="r-row r-total"><span>TOTAL</span><span>480.000</span></div>
-                            <div class="r-row"><span>Tunai</span><span>500.000</span></div>
-                            <div class="r-row"><span>Kembali</span><span>20.000</span></div>
-                            <div class="r-foot">Terima kasih, sampai jumpa lagi</div>
-                            </div>
-
-                            <div class="r-body" data-receipt="cafe" hidden>
-                                <div class="r-head">
-                                    <strong>CAFE KOPI SENJA</strong>
-                                    <span>14/10/2026 19:40 · Meja 4</span>
-                                </div>
-                                <hr class="r-sep">
-                                <div class="r-row"><span>Kopi susu aren · 2</span><span>44.000</span></div>
-                                <div class="r-row"><span>Nasi goreng spesial · 1</span><span>28.000</span></div>
-                                <div class="r-row"><small>&nbsp;&nbsp;pedas, tanpa acar</small><span></span></div>
-                                <div class="r-row"><span>Roti bakar cokelat · 1</span><span>18.000</span></div>
-                                <hr class="r-sep">
-                                <div class="r-row"><span>Subtotal</span><span>90.000</span></div>
-                                <div class="r-row"><span>Layanan 5%</span><span>4.500</span></div>
-                                <div class="r-row"><span>Pajak PB1 10%</span><span>9.000</span></div>
-                                <div class="r-row r-total"><span>TOTAL</span><span>103.500</span></div>
-                                <div class="r-row"><span>QRIS</span><span>103.500</span></div>
-                                <div class="r-foot">Makan di tempat · Meja 4<br>Terima kasih, datang lagi ya</div>
-                            </div>
-                            <div class="stamp-row"><span class="stamp" id="stamp">Terkirim</span></div>
+                {{-- slideshow HP Android: kasir ini dipakai lewat Android --}}
+                <div class="hero-phone-wrap" id="heroShow" aria-label="Cuplikan aplikasi kasir Android">
+                    <div class="hero-phone">
+                        <span class="hp-badge"><i data-lucide="smartphone"></i>Dipakai di Android</span>
+                        <span class="hp-notch"></span>
+                        <div class="hp-screen">
+                            <img class="hp-slide is-active" src="{{ asset('images/landing/01-ganti-hp.png') }}"
+                                alt="Ganti HP kasir sekali ketuk" data-cap="Ganti HP kasir sekali ketuk">
+                            <img class="hp-slide" src="{{ asset('images/landing/02-jual-kilo.png') }}"
+                                alt="Jual per kilo, bebas desimal" data-cap="Jual per kilo, bebas desimal" loading="lazy">
+                            <img class="hp-slide" src="{{ asset('images/landing/03-tempo-piutang.png') }}"
+                                alt="Catat utang pelanggan otomatis" data-cap="Catat utang otomatis" loading="lazy">
+                            <img class="hp-slide" src="{{ asset('images/landing/04-multi-satuan.png') }}"
+                                alt="Satu produk banyak satuan" data-cap="1 produk, banyak satuan" loading="lazy">
+                            <img class="hp-slide" src="{{ asset('images/landing/05-meja-cafe.png') }}"
+                                alt="Kelola meja cafe" data-cap="Kelola meja cafe" loading="lazy">
+                            <img class="hp-slide" src="{{ asset('images/landing/06-bayar-pesanan.png') }}"
+                                alt="Simpan dan bayar pesanan" data-cap="Simpan &amp; bayar pesanan" loading="lazy">
                         </div>
                     </div>
-
-                    <div class="queue" id="queue">
-                        <i data-lucide="cloud-check"></i><span>Semua transaksi sudah <b>tersimpan di server</b></span>
-                    </div>
+                    <span class="hp-cap"><i data-lucide="smartphone"></i><span id="hpCapTxt">Ganti HP kasir sekali
+                            ketuk</span></span>
+                    <div class="hp-dots" id="hpDots"></div>
                 </div>
             </div>
         </section>
@@ -2873,55 +2974,69 @@
             sync();
         })();
 
-        // Demo: matikan internet → struk tetap tercetak, transaksi menunggu dikirim
+        // Hero: slideshow HP Android (otomatis, premium)
         (() => {
-            const counter = document.getElementById('counter');
-            const sw = document.getElementById('netSwitch');
-            if (!counter || !sw) return;
-            const label = document.getElementById('netLabel');
-            const hint = document.getElementById('netHint');
-            const stamp = document.getElementById('stamp');
-            const queue = document.getElementById('queue');
-            const receipt = document.getElementById('receipt');
+            const show = document.getElementById('heroShow');
+            if (!show) return;
+            const slides = [...show.querySelectorAll('.hp-slide')];
+            const dotsWrap = document.getElementById('hpDots');
+            const capTxt = document.getElementById('hpCapTxt');
+            if (!slides.length) return;
 
-            const render = (online) => {
-                counter.classList.toggle('is-offline', !online);
-                sw.setAttribute('aria-checked', online ? 'true' : 'false');
-                label.textContent = online ? 'Online' : 'Offline';
-                hint.textContent = online ? 'Coba matikan internet' : 'Kasir tetap jalan';
-                stamp.textContent = online ? 'Terkirim' : 'Tersimpan di HP';
-                queue.innerHTML = online ?
-                    '<i data-lucide="cloud-check"></i><span>Semua transaksi sudah <b>tersimpan di server</b></span>' :
-                    '<i data-lucide="hourglass"></i><span><b>3 transaksi</b> menunggu, terkirim otomatis saat online</span>';
-                window.lucide?.createIcons();
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            let i = 0;
+            let timer = null;
 
-                // cetak ulang struk (kecuali pengguna memilih gerak dikurangi)
-                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    receipt.style.animation = 'none';
-                    void receipt.offsetWidth;
-                    receipt.style.animation = '';
-                }
+            const dots = slides.map((s, idx) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.setAttribute('aria-label', 'Tampilkan slide ' + (idx + 1));
+                b.addEventListener('click', () => {
+                    go(idx);
+                    restart();
+                });
+                dotsWrap.appendChild(b);
+                return b;
+            });
+
+            const go = (n) => {
+                i = (n + slides.length) % slides.length;
+                slides.forEach((s, idx) => s.classList.toggle('is-active', idx === i));
+                dots.forEach((d, idx) => d.classList.toggle('is-active', idx === i));
+                if (capTxt) capTxt.textContent = slides[i].dataset.cap || '';
             };
 
-            sw.addEventListener('click', () => render(sw.getAttribute('aria-checked') !== 'true'));
+            const start = () => {
+                if (!reduce && !timer) timer = setInterval(() => go(i + 1), 3000);
+            };
+            const stop = () => {
+                if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+            };
+            const restart = () => {
+                stop();
+                start();
+            };
 
-            // dua mode jualan → ganti contoh struk
+            go(0);
+            start();
+            show.addEventListener('mouseenter', stop);
+            show.addEventListener('mouseleave', start);
+            show.addEventListener('focusin', stop);
+            show.addEventListener('focusout', start);
+        })();
+
+        // Dua mode jualan → pilihan visual (info usaha)
+        (() => {
             const modes = document.querySelectorAll('.mode[data-mode]');
             modes.forEach((btn) => btn.addEventListener('click', () => {
-                const mode = btn.dataset.mode;
                 modes.forEach((b) => {
                     const on = b === btn;
                     b.classList.toggle('is-active', on);
                     b.setAttribute('aria-selected', on ? 'true' : 'false');
                 });
-                receipt.querySelectorAll('.r-body').forEach((body) => {
-                    body.hidden = body.dataset.receipt !== mode;
-                });
-                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    receipt.style.animation = 'none';
-                    void receipt.offsetWidth;
-                    receipt.style.animation = '';
-                }
             }));
         })();
     </script>
