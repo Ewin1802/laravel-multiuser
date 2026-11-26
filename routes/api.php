@@ -73,6 +73,8 @@ Route::prefix('admin')->name('api.admin.')->group(function () {
         Route::get('/announcements', [Admin\AnnouncementController::class, 'index'])->name('announcements.index');
         Route::post('/announcements', [Admin\AnnouncementController::class, 'store'])
             ->middleware('throttle:10,1')->name('announcements.store');
+        Route::delete('/announcements/{announcement}', [Admin\AnnouncementController::class, 'destroy'])
+            ->name('announcements.destroy');
     });
 });
 

@@ -55,4 +55,19 @@ class AnnouncementController extends Controller
             'data' => ['id' => $a->id, 'status' => $a->status],
         ], $a->status === 'sent' ? 201 : 502);
     }
+
+    /**
+     * Hapus satu baris riwayat pengumuman. Ini hanya menghapus catatannya di
+     * panel admin — notifikasi yang sudah terkirim ke HP kasir tidak bisa
+     * ditarik kembali.
+     */
+    public function destroy(Announcement $announcement)
+    {
+        $announcement->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Riwayat pengumuman dihapus.',
+        ]);
+    }
 }
