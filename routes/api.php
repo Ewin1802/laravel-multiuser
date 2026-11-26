@@ -68,6 +68,8 @@ Route::prefix('admin')->name('api.admin.')->group(function () {
         Route::post('/stores/{store}/reject', [Admin\StoreController::class, 'reject'])->name('stores.reject');
         Route::post('/stores/{store}/unsuspend', [Admin\StoreController::class, 'unsuspend'])->name('stores.unsuspend');
 
+        Route::get('/visits', [Admin\VisitController::class, 'index'])->name('visits.index');
+
         Route::get('/announcements', [Admin\AnnouncementController::class, 'index'])->name('announcements.index');
         Route::post('/announcements', [Admin\AnnouncementController::class, 'store'])
             ->middleware('throttle:10,1')->name('announcements.store');
