@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\PageVisit;
+use App\Support\UserAgentInfo;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -30,7 +31,7 @@ class TrackPageVisit
                     'referer' => ($ref = (string) $request->headers->get('referer')) !== ''
                         ? mb_substr($ref, 0, 255) : null,
                     'user_agent' => $ua !== '' ? mb_substr($ua, 0, 512) : null,
-                    'is_bot' => $this->looksLikeBot($ua),
+                    'is_bot' => UserAgentInfo::isBot($ua),
                     'visited_at' => Carbon::now(),
                 ]);
             }
@@ -59,28 +60,5 @@ class TrackPageVisit
         }
 
         return mb_substr($ip ?: '0.0.0.0', 0, 45);
-    }
-
-    private function looksLikeBot(string $ua): bool
-    {
-        if ($ua === '') {
-            return true;
-        }
-
-        $needles = [
-            'bot', 'crawl', 'spider', 'slurp', 'bingpreview', 'facebookexternalhit',
-            'whatsapp', 'telegrambot', 'headless', 'phantom', 'python-requests',
-            'curl', 'wget', 'go-http', 'okhttp', 'axios', 'scrapy', 'lighthouse',
-            'pingdom', 'uptimerobot', 'semrush', 'ahrefs', 'dotbot',
-        ];
-
-        $ua = strtolower($ua);
-        foreach ($needles as $n) {
-            if (str_contains($ua, $n)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

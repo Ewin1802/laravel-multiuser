@@ -39,12 +39,15 @@
         }
 
         .v-ua {
-            max-width: 320px;
+            display: block;
+            max-width: 360px;
+            margin-top: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: var(--muted, #6b7280);
-            font-size: 12px;
+            color: var(--muted, #9aa3b0);
+            font-size: 11px;
+            opacity: .7;
         }
     </style>
 
@@ -155,11 +158,12 @@
                             <th>Waktu</th>
                             <th>IP</th>
                             <th>Halaman</th>
-                            <th>Perangkat / browser</th>
+                            <th>Perangkat / Browser</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($recent as $v)
+                            @php $ringkas = \App\Support\UserAgentInfo::summary($v->user_agent); @endphp
                             <tr>
                                 <td>{{ $fmt($v->visited_at) }}</td>
                                 <td><span class="v-ipcell">{{ $v->ip }}</span>
@@ -168,7 +172,10 @@
                                     @endif
                                 </td>
                                 <td>{{ $v->path }}</td>
-                                <td><span class="v-ua" title="{{ $v->user_agent }}">{{ $v->user_agent ?: '-' }}</span></td>
+                                <td>
+                                    <strong style="font-weight:600">{{ $ringkas }}</strong>
+                                    <span class="v-ua" title="{{ $v->user_agent }}">{{ $v->user_agent ?: '-' }}</span>
+                                </td>
                             </tr>
                         @empty
                             <tr>
